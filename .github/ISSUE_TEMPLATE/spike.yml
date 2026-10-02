@@ -1,0 +1,65 @@
+name: Spike
+description: Answer an open question within a timebox, usually ending in a decision record.
+title: "spike: "
+labels:
+  - spike
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: Question
+      description: What do we need to find out, and why now?
+    validations:
+      required: true
+  - type: dropdown
+    id: timebox
+    attributes:
+      label: Timebox
+      description: Stop at the timebox and report what is known, even if the answer is partial.
+      options:
+        - Half a day
+        - 1 day
+        - 2 days
+        - 1 week
+    validations:
+      required: true
+  - type: textarea
+    id: options
+    attributes:
+      label: Options to compare
+      description: The candidates, and what each has to prove.
+      placeholder: |
+        - Option A: ...
+        - Option B: ...
+    validations:
+      required: false
+  - type: textarea
+    id: done-when
+    attributes:
+      label: Done when
+      description: Concrete conditions that end the spike.
+      placeholder: |
+        - [ ] ... works end to end on ...
+        - [ ] Limits and costs measured for ...
+    validations:
+      required: true
+  - type: dropdown
+    id: output
+    attributes:
+      label: Output
+      description: What the spike leaves behind. Spike code is thrown away unless the issue says otherwise.
+      multiple: true
+      options:
+        - New or updated decision record
+        - Documentation update
+        - Follow-up feature issues
+        - Throwaway prototype branch
+    validations:
+      required: true
+  - type: textarea
+    id: links
+    attributes:
+      label: Related decisions and plan sections
+      description: Links to related decision records, issues or plan sections.
+    validations:
+      required: false

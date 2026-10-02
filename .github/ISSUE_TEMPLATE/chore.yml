@@ -1,0 +1,34 @@
+name: Chore
+description: Tooling, dependencies, docs, reviews or operations work that changes no behaviour for users.
+title: "chore: "
+labels:
+  - chore
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Tooling and CI
+        - Dependencies
+        - Docs and content review
+        - Operations and accounts
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: what-and-why
+    attributes:
+      label: What and why
+      description: What needs doing, and what happens if it doesn't.
+    validations:
+      required: true
+  - type: textarea
+    id: done-when
+    attributes:
+      label: Done when
+      description: Concrete conditions that close this issue.
+      placeholder: |
+        - [ ] ...
+    validations:
+      required: true
