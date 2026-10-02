@@ -7,6 +7,7 @@ GitHub uses a file from here for any repository in the organisation that does no
 | File | Purpose |
 | --- | --- |
 | [`.github/ISSUE_TEMPLATE/`](.github/ISSUE_TEMPLATE/) | Issue forms: bug, feature, chore and spike. Blank issues are off. |
+| [`.github/VULNERABILITY_REPORT.yml`](.github/VULNERABILITY_REPORT.yml) | Form for private vulnerability reports |
 | [`.github/pull_request_template.md`](.github/pull_request_template.md) | Pull request template |
 | [`CONTRIBUTING.md`](CONTRIBUTING.md) | How to contribute |
 | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) | Contributor Covenant 2.1 |
