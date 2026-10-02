@@ -19,7 +19,13 @@ GitHub uses a file from here for any repository in the organisation that does no
 
 - If a repository has its own `.github/ISSUE_TEMPLATE/` folder, none of these issue forms are used there.
 - The issue forms apply the labels `bug`, `enhancement`, `chore` and `spike`. Each label must exist in this repository and in every repository that uses the forms.
-- Licences cannot be set here; add a `LICENSE` to each repository.
+- Licences cannot be set here; add a `LICENSE` to each repository, or create new repositories from [`khinse-labs/repo-template`](https://github.com/khinse-labs/repo-template).
 - This repository must stay public for the defaults to apply.
 
 See GitHub's guide to [default community health files](https://docs.github.com/en/communities/setting-up-your-project-for-healthy-contributions/creating-a-default-community-health-file).
+
+## Licence
+
+The files in this repository are dedicated to the public domain under [CC0 1.0](LICENSE). Copy and adapt them freely. The exception is [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md), which is adapted from the Contributor Covenant and stays under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+
+This licence covers this repository only. It does not apply to other khinse-labs repositories.
