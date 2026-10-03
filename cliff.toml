@@ -1,0 +1,46 @@
+# Release notes and the next version for khinse-labs repositories: https://git-cliff.org
+# The release workflow in khinse-labs/workflows reads this file from a tag of this repository.
+# The commit types match cchk.toml: keep the two in step.
+
+[changelog]
+# One release's notes, for its GitHub release. The release title carries the version.
+# Group 9 (tooling and process) stays out of the notes; the release workflow skips a release
+# that would contain nothing else.
+body = """
+{% for entry in commits | commit_groups(groups=commit_parsers_groups) %}\
+{% if entry.group is not starting_with("<!-- 9 -->") %}
+### {{ entry.group | striptags | trim }}
+{% for commit in entry.commits %}
+- {% if commit.scope %}**{{ commit.scope }}:** {% endif %}\
+  {{ commit.message | upper_first }}\
+{% endfor %}
+{% endif %}\
+{% endfor %}
+"""
+trim = true
+render_always = true
+
+[git]
+conventional_commits = true
+filter_unconventional = true
+# The HTML comments order the groups; the release notes don't show them.
+commit_parsers = [
+  { field = "breaking", pattern = "true", group = "<!-- 0 -->Breaking changes" },
+  { message = "^feat", group = "<!-- 1 -->Features" },
+  { message = "^fix", group = "<!-- 2 -->Fixes" },
+  { message = "^perf", group = "<!-- 3 -->Performance" },
+  { message = "^refactor", group = "<!-- 4 -->Refactoring" },
+  { message = "^docs", group = "<!-- 5 -->Documentation" },
+  { message = "^revert", group = "<!-- 6 -->Reverts" },
+  { message = "^(chore|ci|build|style|test|spike)", group = "<!-- 9 -->Maintenance" },
+]
+# Only full versions are releases. Moving major tags such as v1 in khinse-labs/workflows are not.
+tag_pattern = '^v[0-9]+\.[0-9]+\.[0-9]+$'
+topo_order_commits = true
+sort_commits = "oldest"
+
+[bump]
+# Conventional semver: feat bumps the minor version and a breaking change the major, also before 1.0.0.
+features_always_bump_minor = true
+breaking_always_bump_major = true
+initial_tag = "v0.1.0"
