@@ -1,0 +1,23 @@
+# Commit and branch conventions for khinse-labs repositories, checked by commit-check
+# (https://commit-check.com) against cchk.toml in this repository. Needs uv on the machine.
+# Use it from a repository's lefthook.yml:
+#
+#   remotes:
+#     - git_url: https://github.com/khinse-labs/.github
+#       ref: v1.0.0 # a tag: lefthook cannot clone a commit SHA
+#       configs:
+#         - lefthook/conventions.yml
+#
+# The scripts are in .lefthook/ at the root of this repository.
+
+commit-msg:
+  jobs:
+    - name: commit-check
+      script: commit-check.sh
+      runner: sh
+
+pre-push:
+  jobs:
+    - name: commit-check
+      script: commit-check.sh
+      runner: sh
