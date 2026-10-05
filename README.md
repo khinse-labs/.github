@@ -20,7 +20,7 @@ GitHub uses a file from here for any repository in the organisation that does no
 - If a repository has its own `.github/ISSUE_TEMPLATE/` folder, none of these issue forms are used there.
 - The issue forms set the org issue types Bug, Feature and Task. They apply no labels and add issues to no project: each product's own project adds its repository's issues with its auto-add workflow.
 - Licences cannot be set here; add a `LICENSE` to each repository.
-- Organisation settings (new repositories, labels, the Roadmap project) are documented in the README of the product project, visible to organisation members.
+- Organisation settings (new repositories, labels, product projects) are documented in the README of the Pantry Dex project, visible to organisation members.
 - This repository must stay public for the defaults to apply.
 
 See GitHub's guide to [default community health files](https://docs.github.com/en/communities/setting-up-your-project-for-healthy-contributions/creating-a-default-community-health-file).
