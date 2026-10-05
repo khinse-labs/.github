@@ -1,7 +1,6 @@
 name: Task
 description: Tooling, dependencies, docs, reviews or operations work that changes no behaviour for users.
 type: Task
-projects: ["khinse-labs/1"]
 body:
   - type: dropdown
     id: area

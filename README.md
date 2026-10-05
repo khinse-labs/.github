@@ -18,9 +18,9 @@ GitHub uses a file from here for any repository in the organisation that does no
 ## Notes for maintainers
 
 - If a repository has its own `.github/ISSUE_TEMPLATE/` folder, none of these issue forms are used there.
-- The issue forms set the org issue types Bug, Feature and Task, and add each issue to the org's Roadmap project (`khinse-labs/1`). They apply no labels; labels are managed in [`khinse-labs/infra`](https://github.com/khinse-labs/infra).
-- The person opening an issue needs write access to the Roadmap project for the issue to be added to it. Turn on the project's auto-add workflow to catch issues from anyone else.
-- Licences cannot be set here; add a `LICENSE` to each repository, or create new repositories from [`khinse-labs/repo-template`](https://github.com/khinse-labs/repo-template).
+- The issue forms set the org issue types Bug, Feature and Task. They apply no labels and add issues to no project: each product's own project adds its repository's issues with its auto-add workflow.
+- Licences cannot be set here; add a `LICENSE` to each repository.
+- Organisation settings (new repositories, labels, product projects) are documented in the README of the Pantry Dex project, visible to organisation members.
 - This repository must stay public for the defaults to apply.
 
 See GitHub's guide to [default community health files](https://docs.github.com/en/communities/setting-up-your-project-for-healthy-contributions/creating-a-default-community-health-file).

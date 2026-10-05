@@ -1,7 +1,6 @@
 name: Feature request
 description: Propose a new feature or an improvement.
 type: Feature
-projects: ["khinse-labs/1"]
 body:
   - type: textarea
     id: problem
