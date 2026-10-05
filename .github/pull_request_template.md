@@ -21,6 +21,7 @@ Closes #
 
 - [ ] Tests added or updated
 - [ ] Docs updated in this PR (or not needed)
+- [ ] Decision record added or updated (or none made)
 - [ ] UI changes checked at phone and desktop width, in light and dark (or no UI changes)
 - [ ] The repository's checks pass
 

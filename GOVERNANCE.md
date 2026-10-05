@@ -21,10 +21,12 @@ Each ADR has a status:
 
 Accepted ADRs are not rewritten. To change a decision, write a new ADR that supersedes the old one.
 
+An ADR, or any doc change that records a decision, ships in the same PR as the code that implements it.
+
 ## Contributors and AI agents
 
-- Contributors and AI agents may open issues and pull requests.
-- **AI agents never merge pull requests and never push to `main`.**
-- Only maintainers merge, using squash merges.
+- Contributors may open issues and pull requests.
+- Only maintainers merge, using squash merges. Nobody pushes directly to `main`.
+- **An AI agent may do anything its person can do**, such as open, triage or merge. Each person is responsible for what their agents do.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for expected behaviour.

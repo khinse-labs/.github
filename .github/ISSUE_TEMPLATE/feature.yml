@@ -1,8 +1,7 @@
 name: Feature request
 description: Propose a new feature or an improvement.
-title: "feat: "
-labels:
-  - enhancement
+type: Feature
+projects: ["khinse-labs/1"]
 body:
   - type: textarea
     id: problem
@@ -28,6 +27,17 @@ body:
         - [ ] ...
     validations:
       required: true
+  - type: textarea
+    id: open-questions
+    attributes:
+      label: Open questions
+      description: >-
+        One checklist item per unknown. Tick each with a link to the comment that answers it, or with
+        "settle in PR". Every box is ticked before the issue is Ready. The PR that settles a question
+        adds the decision record or doc change.
+      value: "- [ ] "
+    validations:
+      required: false
   - type: textarea
     id: out-of-scope
     attributes:
