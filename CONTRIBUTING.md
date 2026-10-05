@@ -4,7 +4,7 @@ These are the default guidelines for khinse-labs repositories. A repository's ow
 
 ## Issues
 
-Most work should start as an issue, so it is tracked and discussed before it is built. Small fixes can skip it. Blank issues are off; pick the form that fits. Each form sets the issue type and adds the issue to the org's [Roadmap](https://github.com/orgs/khinse-labs/projects/1) project:
+Most work should start as an issue, so it is tracked and discussed before it is built. Small fixes can skip it. Blank issues are off; pick the form that fits. Each form sets the issue type and adds the issue to the org's Roadmap project:
 
 | Form    | Issue type | Use it for                                                                 |
 | ------- | ---------- | -------------------------------------------------------------------------- |
@@ -27,7 +27,7 @@ Every issue moves through the Roadmap's Status field: **Backlog → Ready → In
 Labels are managed by hand in the GitHub UI, and no Action creates or applies them. Set them by hand at triage:
 
 - `accessibility`, `documentation`, `good first issue`, `help wanted`.
-- Area labels, one broad word each (`ui`, `api`, `data`, `auth`, `i18n`, `privacy`, `security`, `performance`, `ci`). Add one when it is first needed, as described in the [README](README.md#labels).
+- Area labels, one broad word each (`ui`, `api`, `data`, `auth`, `i18n`, `privacy`, `security`, `performance`, `ci`). Maintainers add one when it is first needed.
 
 ## Workflow
 
