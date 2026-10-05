@@ -24,10 +24,10 @@ Every issue moves through the Roadmap's Status field: **Backlog → Ready → In
 
 ### Labels
 
-Labels are managed in [khinse-labs/infra](https://github.com/khinse-labs/infra), not in the GitHub UI, and no Action applies them. Set them by hand at triage:
+Labels are managed by hand in the GitHub UI, and no Action creates or applies them. Set them by hand at triage:
 
 - `accessibility`, `documentation`, `good first issue`, `help wanted`.
-- Area labels, one broad word each (`ui`, `api`, `data`, `auth`, `i18n`, `privacy`, `security`, `performance`, `ci`). Add one to infra when it is first needed.
+- Area labels, one broad word each (`ui`, `api`, `data`, `auth`, `i18n`, `privacy`, `security`, `performance`, `ci`). Add one when it is first needed, as described in the [README](README.md#labels).
 
 ## Workflow
 
