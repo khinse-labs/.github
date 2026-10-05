@@ -4,7 +4,7 @@ These are the default guidelines for khinse-labs repositories. A repository's ow
 
 ## Issues
 
-Most work should start as an issue, so it is tracked and discussed before it is built. Small fixes can skip it. Blank issues are off; pick the form that fits. Each form sets the issue type and adds the issue to the org's Roadmap project:
+Most work should start as an issue, so it is tracked and discussed before it is built. Small fixes can skip it. Blank issues are off; pick the form that fits. Each form sets the issue type, and the product's project picks the issue up automatically:
 
 | Form    | Issue type | Use it for                                                                 |
 | ------- | ---------- | -------------------------------------------------------------------------- |
@@ -14,9 +14,9 @@ Most work should start as an issue, so it is tracked and discussed before it is 
 
 Releases are milestones. Split a big feature into sub-issues.
 
-### Roadmap
+### Project board
 
-Every issue moves through the Roadmap's Status field: **Backlog → Ready → In progress → In review → Done**.
+Each product has its own project. Every issue moves through its Status field: **Backlog → Ready → In progress → In review → Done**.
 
 - A Feature lists what is still unknown under **Open questions**, one checklist item each. Business calls, such as who owns an account, go on the first feature that needs them.
 - Tick a question with a link to the comment that answers it, or with "settle in PR".
