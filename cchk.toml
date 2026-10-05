@@ -1,4 +1,4 @@
-# Commit and branch rules for every khinse-labs repository: https://commit-check.com
+# Commit rules for every khinse-labs repository: https://commit-check.com
 # A repository opts in with a cchk.toml of its own that starts with
 #   inherit_from = "github:khinse-labs/.github:cchk.toml"
 # and overrides only what it needs to.
@@ -6,7 +6,7 @@
 [commit]
 # https://www.conventionalcommits.org
 conventional_commits = true
-# The types in CONTRIBUTING.md, plus `spike` for the Spike issue template.
+# The types in CONTRIBUTING.md.
 allow_commit_types = [
   "feat",
   "fix",
@@ -19,7 +19,6 @@ allow_commit_types = [
   "build",
   "ci",
   "revert",
-  "spike",
 ]
 subject_capitalized = false
 subject_min_length = 5
@@ -32,26 +31,9 @@ allow_empty_commits = false
 ignore_authors = ["renovate[bot]", "dependabot[bot]"]
 
 [branch]
-# https://conventionalbranch.org: `type/slug`, with the issue number first when there is one
-# (`feat/12-scan-barcode`). Trunk names (main, master) are always allowed.
-conventional_branch = true
-allow_branch_types = [
-  "feat",
-  "fix",
-  "docs",
-  "refactor",
-  "test",
-  "chore",
-  "perf",
-  "build",
-  "ci",
-  "spike",
-  "hotfix",
-  "release",
-]
-# Entries are regular expressions matched against the whole name. Renovate names its own branches.
-allow_branch_names = ["renovate/.+"]
-ignore_authors = ["renovate[bot]", "dependabot[bot]"]
+# Branch names are not checked: they vanish when a PR is squash merged, and tools pick their own
+# (`claude/...`, GitHub's "Create a branch"). Only the squash message below lands on main.
+conventional_branch = false
 
 [pull_request]
 # PRs are squash merged, so the GitHub App checks the message the squash would land on main

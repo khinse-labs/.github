@@ -1,10 +1,10 @@
 # Release notes and the next version for khinse-labs repositories: https://git-cliff.org
-# The release workflow in khinse-labs/workflows reads this file from a tag of this repository.
+# No release workflow exists yet; one would read this file from a tag of this repository.
 # The commit types match cchk.toml: keep the two in step.
 
 [changelog]
 # One release's notes, for its GitHub release. The release title carries the version.
-# Group 9 (tooling and process) stays out of the notes; the release workflow skips a release
+# Group 9 (tooling and process) stays out of the notes; a release workflow should skip a release
 # that would contain nothing else.
 body = """
 {% for entry in commits | commit_groups(groups=commit_parsers_groups) %}\
@@ -32,9 +32,9 @@ commit_parsers = [
   { message = "^refactor", group = "<!-- 4 -->Refactoring" },
   { message = "^docs", group = "<!-- 5 -->Documentation" },
   { message = "^revert", group = "<!-- 6 -->Reverts" },
-  { message = "^(chore|ci|build|style|test|spike)", group = "<!-- 9 -->Maintenance" },
+  { message = "^(chore|ci|build|style|test)", group = "<!-- 9 -->Maintenance" },
 ]
-# Only full versions are releases. Moving major tags such as v1 in khinse-labs/workflows are not.
+# Only full versions are releases. Moving major tags such as v1 are not.
 tag_pattern = '^v[0-9]+\.[0-9]+\.[0-9]+$'
 topo_order_commits = true
 sort_commits = "oldest"

@@ -1,8 +1,7 @@
 name: Bug report
 description: Report something that is broken or behaves unexpectedly.
-title: "fix: "
-labels:
-  - bug
+type: Bug
+projects: ["khinse-labs/1"]
 body:
   - type: markdown
     attributes:

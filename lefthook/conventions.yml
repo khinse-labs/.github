@@ -1,4 +1,4 @@
-# Commit and branch conventions for khinse-labs repositories, checked by commit-check
+# Commit conventions for khinse-labs repositories, checked by commit-check
 # (https://commit-check.com) against cchk.toml in this repository. Needs uv on the machine.
 # Use it from a repository's lefthook.yml:
 #
@@ -11,12 +11,6 @@
 # The scripts are in .lefthook/ at the root of this repository.
 
 commit-msg:
-  jobs:
-    - name: commit-check
-      script: commit-check.sh
-      runner: sh
-
-pre-push:
   jobs:
     - name: commit-check
       script: commit-check.sh
