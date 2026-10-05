@@ -27,7 +27,7 @@ See GitHub's guide to [default community health files](https://docs.github.com/e
 
 ## Organisation settings
 
-Repository settings, labels, rulesets and the Roadmap project are managed by hand in the GitHub UI. They used to be managed as code in `khinse-labs/infra`, which is now archived. Record any change to them here, in a PR.
+Repository settings, labels, rulesets and the Roadmap project are managed by hand in the GitHub UI. They used to be managed as code in `khinse-labs/infra`, which was deleted on 2026-10-05. Record any change to them here, in a PR.
 
 ### New repository
 
