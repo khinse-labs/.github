@@ -32,9 +32,12 @@ allow_empty_commits = false
 ignore_authors = ["renovate[bot]", "dependabot[bot]"]
 
 [branch]
-# https://conventionalbranch.org: `<type>/<description>`, such as `feat/12-scan-barcode`. The default
-# types cover the commit types above plus tool prefixes (`claude/`, `renovate/`, `dependabot/`).
+# https://conventionalbranch.org: `<type>/<description>`, such as `feat/12-scan-barcode`. Four types
+# are enough, since the branch vanishes on squash merge: `chore` covers every commit type that is not
+# a feature, a fix or docs. The squash commit still uses the full commit types above.
 conventional_branch = true
+allow_branch_types = ["feat", "fix", "docs", "chore"]
+ignore_authors = ["renovate[bot]", "dependabot[bot]"]
 
 [pull_request]
 # PRs are squash merged, so the GitHub App checks the message the squash would land on main
