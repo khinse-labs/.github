@@ -1,7 +1,11 @@
 # Commit, branch, author, tag, file and push conventions for khinse-labs repositories, checked by
-# commit-check (https://commit-check.com) against the repository's own cchk.toml, which inherits ours:
+# commit-check (https://commit-check.com) against the repository's .lefthook/cchk.toml, which inherits ours:
 #
 #   inherit_from = "github:khinse-labs/.github@v1.3.0:cchk.toml"
+#
+# Not at a path the Commit Check GitHub App reads (cchk.toml, commit-check.toml, or either under
+# .github/): with a repository config that inherits, the App stopped reporting on pull requests
+# (seen 2026-10-09 and 2026-10-10). Without one, it checks them against our cchk.toml.
 #
 # Needs uv (https://docs.astral.sh/uv/) and lefthook (`uv tool install lefthook`, then
 # `lefthook install` in the repository). Use it from the repository's lefthook.yml:
@@ -19,15 +23,15 @@
 commit-msg:
   jobs:
     - name: commit-check
-      run: uvx --quiet commit-check@2.18.3 --no-banner --message {1}
+      run: uvx --quiet commit-check@2.18.3 --no-banner --config .lefthook/cchk.toml --message {1}
 
 pre-commit:
   jobs:
     - name: commit-check
-      run: uvx --quiet commit-check@2.18.3 --no-banner --branch --author-name --author-email
+      run: uvx --quiet commit-check@2.18.3 --no-banner --config .lefthook/cchk.toml --branch --author-name --author-email
 
 pre-push:
   jobs:
     - name: commit-check
-      run: uvx --quiet commit-check@2.18.3 --no-banner --tag --files --no-force-push
+      run: uvx --quiet commit-check@2.18.3 --no-banner --config .lefthook/cchk.toml --tag --files --no-force-push
       use_stdin: true # the pushed refs, for --no-force-push
