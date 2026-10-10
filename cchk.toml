@@ -31,9 +31,9 @@ allow_empty_commits = false
 ignore_authors = ["renovate[bot]", "dependabot[bot]"]
 
 [branch]
-# Branch names are not checked: they vanish when a PR is squash merged, and tools pick their own
-# (`claude/...`, GitHub's "Create a branch"). Only the squash message below lands on main.
-conventional_branch = false
+# https://conventionalbranch.org: `<type>/<description>`, such as `feat/12-scan-barcode`. The default
+# types cover the commit types above plus tool prefixes (`claude/`, `renovate/`, `dependabot/`).
+conventional_branch = true
 
 [pull_request]
 # PRs are squash merged, so the GitHub App checks the message the squash would land on main
