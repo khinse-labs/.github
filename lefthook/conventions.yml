@@ -1,5 +1,9 @@
-# Commit conventions for khinse-labs repositories, checked by commit-check
-# (https://commit-check.com) against cchk.toml in this repository. Needs uv on the machine.
+# Commit, branch, author, tag and file conventions for khinse-labs repositories, checked by
+# commit-check (https://commit-check.com). Needs uv (https://docs.astral.sh/uv/) on the machine,
+# and a cchk.toml in the repository that inherits ours:
+#
+#   inherit_from = "github:khinse-labs/.github:cchk.toml"
+#
 # Use it from a repository's lefthook.yml:
 #
 #   remotes:
@@ -8,10 +12,19 @@
 #       configs:
 #         - lefthook/conventions.yml
 #
-# The scripts are in .lefthook/ at the root of this repository.
+# Force pushes stay allowed: branches are rebased onto main.
 
 commit-msg:
-  jobs:
-    - name: commit-check
-      script: commit-check.sh
-      runner: sh
+  commands:
+    commit-check:
+      run: uvx --quiet commit-check@2.18.3 --no-banner --message {1}
+
+pre-commit:
+  commands:
+    commit-check:
+      run: uvx --quiet commit-check@2.18.3 --no-banner --branch --author-name --author-email
+
+pre-push:
+  commands:
+    commit-check:
+      run: uvx --quiet commit-check@2.18.3 --no-banner --tag --files
