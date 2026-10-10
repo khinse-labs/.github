@@ -23,7 +23,8 @@ allow_commit_types = [
 subject_capitalized = false
 subject_min_length = 5
 subject_max_length = 72
-allow_merge_commits = false
+# Branches catch up by merging main; the squash merge keeps main free of merge commits.
+allow_merge_commits = true
 allow_revert_commits = true
 allow_fixup_commits = true
 allow_wip_commits = false

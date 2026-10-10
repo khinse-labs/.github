@@ -31,7 +31,7 @@ Labels are managed by hand in the GitHub UI, and no Action creates or applies th
 
 ## Workflow
 
-- **Trunk-based on `main`.** Branch off `main`, keep branches short-lived and rebase often.
+- **Trunk-based on `main`.** Branch off `main`, keep branches short-lived and merge `main` in to catch up. Force pushes are blocked; the squash merge keeps `main` linear.
 - **Branch names follow [Conventional Branch](https://conventionalbranch.org)**: `type/slug` with the issue number first, such as `feat/12-scan-barcode`. Tool prefixes such as `claude/...`, `renovate/...` and `dependabot/...` are allowed; GitHub's "Create a branch" names (`12-scan-barcode`) are not, so rename them.
 - **Conventional Commits** are required (`feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `chore:`, and so on).
 - They are checked by [commit-check](https://commit-check.com) against [`cchk.toml`](cchk.toml), which every repository inherits from its own `cchk.toml`: locally by the Git hooks in [`lefthook/conventions.yml`](lefthook/conventions.yml) (install [uv](https://docs.astral.sh/uv/) first), and on pull requests by the Commit Check GitHub App. The hooks check the message on commit-msg, the branch name and author on pre-commit, and tag names and committed files on pre-push.

@@ -11,8 +11,6 @@
 #       ref: v1.0.0 # a tag: lefthook cannot clone a commit SHA
 #       configs:
 #         - lefthook/conventions.yml
-#
-# Force pushes stay allowed: branches are rebased onto main.
 
 commit-msg:
   commands:
@@ -27,4 +25,5 @@ pre-commit:
 pre-push:
   commands:
     commit-check:
-      run: uvx --quiet commit-check@2.18.3 --no-banner --tag --files
+      run: uvx --quiet commit-check@2.18.3 --no-banner --tag --files --no-force-push
+      use_stdin: true # the pushed refs, for --no-force-push
