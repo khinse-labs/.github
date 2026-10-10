@@ -1,0 +1,19 @@
+# Comment rules for khinse-labs repositories, checked by uncomment (https://github.com/Goldziher/uncomment).
+# uncomment has no inherit or include setting, so each repository keeps a copy of this file as
+# .uncomment.toml at its root. Start the copy with a line naming the tag it came from, such as
+#   # Copied from github:khinse-labs/.github@v1.4.0:uncomment.toml
+# and change it there only when the repository needs to differ.
+#
+# Policy: documentation lives in doc comments (TSDoc/JSDoc, docstrings), which are kept. An inline
+# comment survives only when it explains why and starts with WHY:, WARNING: or SAFETY:. Linter
+# directives, TODO and FIXME are kept by default. Config and docs files are skipped: their comments
+# are often the only explanation they have.
+
+[global]
+remove_docs = false
+remove_todos = false
+remove_fixme = false
+preserve_patterns = ["WHY:", "WARNING:", "SAFETY:"]
+exclude = ["**/*.yml", "**/*.yaml", "**/*.toml", "**/*.json", "**/*.sql", "**/*.md"]
+use_default_ignores = true
+respect_gitignore = true

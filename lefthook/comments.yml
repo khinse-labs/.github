@@ -1,0 +1,20 @@
+# Comment check for khinse-labs repositories: uncomment (https://github.com/Goldziher/uncomment) reports
+# comments added in the staged lines that are neither docs nor a WHY:, WARNING: or SAFETY: line.
+# Only the lines being committed are checked, so older comments never block a commit.
+#
+# Needs uv (https://docs.astral.sh/uv/) and lefthook, as for conventions.yml, plus a .uncomment.toml at
+# the repository root copied from ../uncomment.toml. Use it from the repository's lefthook.yml:
+#
+#   remotes:
+#     - git_url: https://github.com/khinse-labs/.github
+#       ref: v1.4.0
+#       configs:
+#         - lefthook/conventions.yml
+#         - lefthook/comments.yml
+#
+# uncomment does not look inside <script> and <style> blocks of .vue files, so review those by hand.
+
+pre-commit:
+  jobs:
+    - name: uncomment
+      run: uvx --quiet uncomment@3.10.2 --check --staged --changed-lines .
