@@ -1,29 +1,33 @@
-# Commit, branch, author, tag and file conventions for khinse-labs repositories, checked by
-# commit-check (https://commit-check.com). Needs uv (https://docs.astral.sh/uv/) on the machine,
-# and a cchk.toml in the repository that inherits ours:
+# Commit, branch, author, tag, file and push conventions for khinse-labs repositories, checked by
+# commit-check (https://commit-check.com) against the repository's own cchk.toml, which inherits ours:
 #
-#   inherit_from = "github:khinse-labs/.github:cchk.toml"
+#   inherit_from = "github:khinse-labs/.github@v1.3.0:cchk.toml"
 #
-# Use it from a repository's lefthook.yml:
+# Needs uv (https://docs.astral.sh/uv/) and lefthook (`uv tool install lefthook`, then
+# `lefthook install` in the repository). Use it from the repository's lefthook.yml:
 #
 #   remotes:
 #     - git_url: https://github.com/khinse-labs/.github
-#       ref: v1.0.0 # a tag: lefthook cannot clone a commit SHA
+#       ref: v1.3.0
 #       configs:
 #         - lefthook/conventions.yml
+#
+# lefthook skips the pre-commit and pre-push jobs when no files changed (an empty commit, or a
+# push of commits that change no files). The Commit Check GitHub App still checks branch names and
+# authors on pull requests.
 
 commit-msg:
-  commands:
-    commit-check:
+  jobs:
+    - name: commit-check
       run: uvx --quiet commit-check@2.18.3 --no-banner --message {1}
 
 pre-commit:
-  commands:
-    commit-check:
+  jobs:
+    - name: commit-check
       run: uvx --quiet commit-check@2.18.3 --no-banner --branch --author-name --author-email
 
 pre-push:
-  commands:
-    commit-check:
+  jobs:
+    - name: commit-check
       run: uvx --quiet commit-check@2.18.3 --no-banner --tag --files --no-force-push
       use_stdin: true # the pushed refs, for --no-force-push

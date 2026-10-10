@@ -1,6 +1,7 @@
 # Commit rules for every khinse-labs repository: https://commit-check.com
-# A repository opts in with a cchk.toml of its own that starts with
-#   inherit_from = "github:khinse-labs/.github:cchk.toml"
+# The Commit Check GitHub App applies this file to pull requests in every repository without a config
+# of its own. For the local hooks, a repository adds a cchk.toml that starts with
+#   inherit_from = "github:khinse-labs/.github@v1.3.0:cchk.toml"
 # and overrides only what it needs to.
 
 [commit]
