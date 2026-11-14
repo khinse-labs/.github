@@ -24,10 +24,7 @@ Each product has its own project. Every issue moves through its Status field: **
 
 ### Labels
 
-Labels are managed by hand in the GitHub UI, and no Action creates or applies them. Set them by hand at triage:
-
-- `accessibility`, `documentation`, `good first issue`, `help wanted`.
-- Area labels, one broad word each (`ui`, `api`, `data`, `auth`, `i18n`, `privacy`, `security`, `performance`, `ci`). Maintainers add one when it is first needed.
+The organisation uses GitHub's default labels: `bug`, `documentation`, `duplicate`, `enhancement`, `good first issue`, `help wanted`, `invalid`, `question` and `wontfix`. Maintainers apply them by hand at triage; no Action creates or applies them.
 
 ## Workflow
 
