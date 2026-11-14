@@ -24,7 +24,13 @@ Each product has its own project. Every issue moves through its Status field: **
 
 ### Labels
 
-The standard label set is in [`labels.yml`](labels.yml). A repository creates the labels with the shared labels-sync workflow (see the [README](README.md#shared-workflows)), which never deletes a label; no Action applies them to issues. Set them by hand at triage:
+The standard labels are defined in [`labels.yml`](labels.yml). They are set as the organisation's default labels for new repositories (Organisation settings > Repository > Repository labels). For an existing repository, apply them by hand; this creates or updates labels and deletes none:
+
+```sh
+yq -o=json -I=0 '.[]' labels.yml | while read -r l; do gh label create "$(jq -r .name <<<"$l")" --color "$(jq -r .color <<<"$l")" --description "$(jq -r .description <<<"$l")" --force --repo khinse-labs/<repo>; done
+```
+
+No Action creates or applies them. Set them by hand at triage:
 
 - `accessibility`, `documentation`, `good first issue`, `help wanted`.
 - Area labels, one broad word each (`ui`, `api`, `data`, `auth`, `i18n`, `privacy`, `security`, `performance`, `ci`). Maintainers add one when it is first needed.
@@ -49,8 +55,7 @@ The standard label set is in [`labels.yml`](labels.yml). A repository creates th
 ### Merging
 
 - PRs are **squash merged**, so the PR title must be a valid Conventional Commit (the App checks the squash message on every PR).
-- **Only maintainers merge.** Nobody pushes directly to `main`; every change lands through a PR. Private repositories on the Free plan cannot block a direct push, so the shared main-guard workflow opens a `direct-push` issue when one happens.
-- The shared pr-title workflow checks the PR title against the same rules, so a bad title fails early.
+- **Only maintainers merge.** Nobody pushes directly to `main`; every change lands through a PR.
 - **Agents act for a person.** An AI agent may do anything its person can do, such as open, triage or merge. Each person is responsible for what their agents do.
 
 ## Getting help

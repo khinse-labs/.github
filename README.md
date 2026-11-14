@@ -14,22 +14,8 @@ GitHub uses a file from here for any repository in the organisation that does no
 | [`SECURITY.md`](SECURITY.md) | How to report a vulnerability privately |
 | [`SUPPORT.md`](SUPPORT.md) | Where to get help |
 | [`GOVERNANCE.md`](GOVERNANCE.md) | How decisions are made |
-| [`.github/workflows/`](.github/workflows/) | Reusable workflows: main guard, PR title and labels sync |
-| [`workflow-templates/`](workflow-templates/) | Caller templates for those workflows, under Actions > New workflow |
-| [`labels.yml`](labels.yml) | The standard label set that labels sync applies |
+| [`labels.yml`](labels.yml) | The standard label set |
 | [`profile/README.md`](profile/README.md) | The organisation's public landing page |
-
-## Shared workflows
-
-Private repositories on the Free plan have no branch protection, rulesets or environments, so the checks live here as reusable workflows (this repository is public, so private repositories can call them). Each takes an optional `runs-on` input (default `ubuntu-latest`).
-
-| Workflow | Called on | What it does |
-| --- | --- | --- |
-| [`main-guard.yml`](.github/workflows/main-guard.yml) | `push` to the default branch | Opens a `direct-push` issue when the pushed commit is not part of a merged pull request, or the push was forced |
-| [`pr-title.yml`](.github/workflows/pr-title.yml) | `pull_request` | Fails when the title is not a Conventional Commit, using the rules of [`cchk.toml`](cchk.toml) |
-| [`labels-sync.yml`](.github/workflows/labels-sync.yml) | `workflow_dispatch`, `schedule` | Creates and updates the labels of [`labels.yml`](labels.yml); never deletes one |
-
-A repository adopts them by copying the templates from **Actions > New workflow** (or from [`workflow-templates/`](workflow-templates/)), or by creating it from `repo-template`, which already has them. The caller grants the permissions each job needs; see the templates.
 
 ## Notes for maintainers
 
