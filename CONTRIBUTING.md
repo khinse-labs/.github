@@ -24,16 +24,7 @@ Each product has its own project. Every issue moves through its Status field: **
 
 ### Labels
 
-The standard labels are defined in [`labels.yml`](labels.yml). They are set as the organisation's default labels for new repositories (Organisation settings > Repository > Repository labels). For an existing repository, apply them by hand; this creates or updates labels and deletes none:
-
-```sh
-yq -o=json -I=0 '.[]' labels.yml | while read -r l; do gh label create "$(jq -r .name <<<"$l")" --color "$(jq -r .color <<<"$l")" --description "$(jq -r .description <<<"$l")" --force --repo khinse-labs/<repo>; done
-```
-
-No Action creates or applies them. Set them by hand at triage:
-
-- `accessibility`, `documentation`, `good first issue`, `help wanted`.
-- Area labels, one broad word each (`ui`, `api`, `data`, `auth`, `i18n`, `privacy`, `security`, `performance`, `ci`). Maintainers add one when it is first needed.
+The organisation uses GitHub's default labels: `bug`, `documentation`, `duplicate`, `enhancement`, `good first issue`, `help wanted`, `invalid`, `question` and `wontfix`. Maintainers apply them by hand at triage; no Action creates or applies them.
 
 ## Workflow
 

@@ -14,7 +14,6 @@ GitHub uses a file from here for any repository in the organisation that does no
 | [`SECURITY.md`](SECURITY.md) | How to report a vulnerability privately |
 | [`SUPPORT.md`](SUPPORT.md) | Where to get help |
 | [`GOVERNANCE.md`](GOVERNANCE.md) | How decisions are made |
-| [`labels.yml`](labels.yml) | The standard label set |
 | [`profile/README.md`](profile/README.md) | The organisation's public landing page |
 
 ## Notes for maintainers
