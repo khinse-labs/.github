@@ -1,0 +1,19 @@
+name: Main guard
+
+# Opens an issue when a commit reaches the default branch without a merged pull request, or by force push.
+# Logic: khinse-labs/.github, .github/workflows/main-guard.yml.
+on:
+  push:
+    branches: [$default-branch]
+
+permissions: {}
+
+jobs:
+  guard:
+    permissions:
+      contents: read
+      pull-requests: read
+      issues: write
+    uses: khinse-labs/.github/.github/workflows/main-guard.yml@main
+    # with:
+    #   runs-on: ubuntu-latest

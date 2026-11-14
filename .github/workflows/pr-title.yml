@@ -1,0 +1,56 @@
+name: PR title
+
+# Checks that the pull request title is a valid Conventional Commit, as it becomes the squash commit
+# on the default branch. The rules mirror cchk.toml: keep the two in step.
+# Call it from a `pull_request` workflow (workflow-templates/pr-title.yml); the calling job needs no
+# permissions.
+on:
+  workflow_call:
+    inputs:
+      runs-on:
+        description: Runner label for the job.
+        type: string
+        default: ubuntu-latest
+
+permissions: {}
+
+jobs:
+  title:
+    runs-on: ${{ inputs.runs-on }}
+    permissions: {}
+    timeout-minutes: 5
+    steps:
+      - name: Check the title
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+          AUTHOR: ${{ github.event.pull_request.user.login }}
+        run: |
+          set -euo pipefail
+
+          # ignore_authors in cchk.toml.
+          case "$AUTHOR" in
+            renovate[bot]|dependabot[bot]) echo "Bot author; skipped."; exit 0 ;;
+          esac
+
+          types='feat|fix|docs|style|refactor|test|chore|perf|build|ci|revert'
+          pattern="^(${types})(\([A-Za-z0-9._/-]+\))?!?: (.+)$"
+
+          fail() {
+            echo "::error title=PR title::$1"
+            echo "Title: $TITLE"
+            echo "Expected: <type>(<scope>)!: <subject>, with type one of: ${types//|/, }"
+            echo "Example: feat(auth): add passkey sign-in"
+            exit 1
+          }
+
+          if [[ ! "$TITLE" =~ $pattern ]]; then
+            fail "Not a Conventional Commit."
+          fi
+          subject="${BASH_REMATCH[3]}"
+
+          [ "${#TITLE}" -le 72 ] || fail "Longer than 72 characters (${#TITLE})."
+          [ "${#subject}" -ge 5 ] || fail "Subject shorter than 5 characters."
+          if [[ "$subject" =~ ^[[:upper:]] ]]; then
+            fail "Subject must not start with a capital letter."
+          fi
+          echo "Title is valid."

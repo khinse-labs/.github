@@ -1,0 +1,6 @@
+{
+  "name": "khinse-labs: labels sync",
+  "description": "Creates and updates the khinse-labs standard labels.",
+  "iconName": "octicon tag",
+  "categories": ["Automation"]
+}

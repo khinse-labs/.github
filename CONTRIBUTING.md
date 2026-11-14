@@ -24,7 +24,7 @@ Each product has its own project. Every issue moves through its Status field: **
 
 ### Labels
 
-Labels are managed by hand in the GitHub UI, and no Action creates or applies them. Set them by hand at triage:
+The standard label set is in [`labels.yml`](labels.yml). A repository creates the labels with the shared labels-sync workflow (see the [README](README.md#shared-workflows)), which never deletes a label; no Action applies them to issues. Set them by hand at triage:
 
 - `accessibility`, `documentation`, `good first issue`, `help wanted`.
 - Area labels, one broad word each (`ui`, `api`, `data`, `auth`, `i18n`, `privacy`, `security`, `performance`, `ci`). Maintainers add one when it is first needed.
@@ -49,7 +49,8 @@ Labels are managed by hand in the GitHub UI, and no Action creates or applies th
 ### Merging
 
 - PRs are **squash merged**, so the PR title must be a valid Conventional Commit (the App checks the squash message on every PR).
-- **Only maintainers merge.** Nobody pushes directly to `main`; every change lands through a PR.
+- **Only maintainers merge.** Nobody pushes directly to `main`; every change lands through a PR. Private repositories on the Free plan cannot block a direct push, so the shared main-guard workflow opens a `direct-push` issue when one happens.
+- The shared pr-title workflow checks the PR title against the same rules, so a bad title fails early.
 - **Agents act for a person.** An AI agent may do anything its person can do, such as open, triage or merge. Each person is responsible for what their agents do.
 
 ## Getting help

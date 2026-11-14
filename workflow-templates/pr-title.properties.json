@@ -1,0 +1,6 @@
+{
+  "name": "khinse-labs: PR title",
+  "description": "Checks that the pull request title is a Conventional Commit.",
+  "iconName": "octicon check-circle",
+  "categories": ["Automation"]
+}

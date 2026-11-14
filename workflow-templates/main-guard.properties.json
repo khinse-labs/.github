@@ -1,0 +1,6 @@
+{
+  "name": "khinse-labs: main guard",
+  "description": "Opens an issue when a commit reaches the default branch without a merged pull request.",
+  "iconName": "octicon shield",
+  "categories": ["Automation"]
+}
