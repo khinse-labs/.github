@@ -55,8 +55,8 @@ jobs:
   release:
     permissions:
       contents: write # the called workflow tags and publishes. It can never hold more than this job
-    # PLACEHOLDER: vX.Y.Z is not a real tag. Use the latest tag of khinse-labs/.github.
-    uses: khinse-labs/.github/.github/workflows/release.yml@vX.Y.Z
+    # Pin the latest tag of khinse-labs/.github.
+    uses: khinse-labs/.github/.github/workflows/release.yml@v0.1.0
     with:
       bump: ${{ inputs.bump }}
       # include-paths: apps/app/** packages/**
@@ -81,7 +81,7 @@ jobs:
 | --- | --- | --- |
 | `bump` | `auto` | `auto` picks the bump from the commits. `patch`, `minor` or `major` forces it, and releases even when every unreleased commit is tooling or process. |
 | `include-paths` | empty | Globs, separated by spaces or newlines, passed to git-cliff as `--include-path`. Only commits that touch these paths count for the version and the notes (for example `apps/app/** packages/**`). Empty counts every commit. |
-| `cliff-ref` | `v1.3.0` | Tag of this repository to read `cliff.toml` from. The caller pins the workflow itself by tag, so the default changes only with a new workflow tag. Set it to read another tag. |
+| `cliff-ref` | `v0.1.0` | Tag of this repository to read `cliff.toml` from. The caller pins the workflow itself by tag, so the default changes only with a new workflow tag. Set it to read another tag. |
 
 | Output | Meaning |
 | --- | --- |
@@ -91,7 +91,7 @@ jobs:
 
 ### Notes
 
-- **Pin the caller to a tag, `@vX.Y.Z`.** Callers pin the shared config to tags of this repository (`cchk.toml`, `lefthook/conventions.yml`, `cliff.toml`), and the workflow follows the same rule. The maintainers make the tag after the change merges, so the examples use `vX.Y.Z` as a placeholder: replace it with a real tag.
+- **Pin the caller to a tag, such as `@v0.1.0`.** Callers pin the shared config to tags of this repository (`cchk.toml`, `lefthook/conventions.yml`, `cliff.toml`), and the workflow follows the same rule. `v0.1.0` is the first tag of this workflow. The maintainers create it right after the workflow merges.
 - **Keep the default of `cliff-ref` on a tag that exists.** If a change to `cliff.toml` alters versions or notes, merge it and make the tag. Then raise the default in a new PR and make a new tag. A change to comments only needs no new default.
 - **The calling job needs `contents: write`.** A called workflow can only use the permissions its caller gives it. Keep `permissions: contents: read` for the rest of the caller.
 - **A release made with `GITHUB_TOKEN` starts no other workflow.** Workflows on `release` or on a pushed tag do not run. So deploy in a job of the caller. That job has `needs:` for the release job and reads `tag` (see the example). Do not deploy in a separate workflow on the tag.

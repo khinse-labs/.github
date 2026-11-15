@@ -31,7 +31,7 @@ on:
           Tag (or other ref) of khinse-labs/.github to read cliff.toml from. Callers pin the workflow
           itself by tag, so the default changes only with a new workflow tag. See README.md.
         type: string
-        default: v1.3.0
+        default: v0.1.0
     outputs:
       released:
         description: "true when a release was made, false when there was nothing to release."
