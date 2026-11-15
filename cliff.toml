@@ -4,8 +4,8 @@
 
 [changelog]
 # One release's notes, for its GitHub release. The release title carries the version.
-# Group 9 (tooling and process) stays out of the notes; the release workflow skips a release
-# that would contain nothing else.
+# Group 9 (tooling and process) stays out of the notes. The release workflow skips a release
+# that contains nothing else.
 body = """
 {% for entry in commits | commit_groups(groups=commit_parsers_groups) %}\
 {% if entry.group is not starting_with("<!-- 9 -->") %}
