@@ -1,0 +1,193 @@
+name: Release
+
+# Reusable release workflow for khinse-labs repositories. Picks the next version from the Conventional
+# Commits since the last tag (git-cliff, with the shared cliff.toml of this repository), creates an
+# annotated tag at the triggering commit and publishes a GitHub release with the notes. Usage and
+# caveats: docs/release-workflow.md.
+#
+# Skips cleanly (`released` = false) when every unreleased commit is tooling or process (cliff.toml
+# group 9: chore, ci, build, style, test) and `bump` is auto. A breaking commit is never in group 9.
+#
+# Releases are cut from the default branch only. A release made with GITHUB_TOKEN starts no other
+# workflow, so a caller that deploys does it as a job of its own, `needs:` this one, using `tag`.
+
+on:
+  workflow_call:
+    inputs:
+      bump:
+        description: Version bump. auto picks it from the commits; patch, minor or major forces it.
+        type: string
+        default: auto
+      include-paths:
+        description: >-
+          Optional. Glob patterns, separated by spaces or newlines, passed to git-cliff as
+          --include-path: only commits that touch these paths count (for example `apps/app/** packages/**`).
+          Empty counts every commit.
+        type: string
+        default: ""
+      cliff-ref:
+        description: >-
+          Tag (or other ref) of khinse-labs/.github to read cliff.toml from. The default is the latest
+          tag that had the file when this workflow was tagged; callers pin the workflow itself by tag,
+          so the default moves only with it.
+        type: string
+        default: v1.3.0
+    outputs:
+      released:
+        description: "true when a release was made, false when there was nothing to release."
+        value: ${{ jobs.release.outputs.released }}
+      version:
+        description: The new version without the leading v (for example 1.2.3). Empty when nothing was released.
+        value: ${{ jobs.release.outputs.version }}
+      tag:
+        description: The new tag, with the leading v (for example v1.2.3). Empty when nothing was released.
+        value: ${{ jobs.release.outputs.tag }}
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    # One release at a time; a second run waits instead of racing for the tag. The group lives here and
+    # not in the caller: the same group in both would deadlock.
+    concurrency:
+      group: release
+      cancel-in-progress: false
+    # The caller's job must grant this too: a called workflow can never hold more than its caller gives.
+    permissions:
+      contents: write # pushes the tag and creates the release
+    outputs:
+      released: ${{ steps.release.outputs.released }}
+      version: ${{ steps.release.outputs.version }}
+      tag: ${{ steps.release.outputs.tag }}
+    steps:
+      # Before the checkout, so a wrong ref costs nothing. Also checks the inputs.
+      - name: Check the ref and the inputs
+        env:
+          BUMP: ${{ inputs.bump }}
+          REF: ${{ github.ref }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          set -euo pipefail
+          if [ "$REF" != "refs/heads/$DEFAULT_BRANCH" ]; then
+            echo "::error::Releases are cut from the default branch, not $REF."
+            exit 1
+          fi
+          case $BUMP in auto | major | minor | patch) ;; *)
+            echo "::error::bump must be auto, major, minor or patch, not $BUMP"
+            exit 1
+            ;;
+          esac
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      # The shared git-cliff config, at the pinned ref. Public repository: the workflow token reads it.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: khinse-labs/.github
+          ref: ${{ inputs.cliff-ref }}
+          path: .release-config
+          sparse-checkout: cliff.toml
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+
+      # git-cliff comes from PyPI, where a published version can never be replaced, through a pinned uv.
+      # setup-uv checks the checksum of the uv it downloads. No cache: this job can publish.
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          version: "0.12.7"
+          enable-cache: false
+
+      - name: Plan the release
+        id: plan
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BUMP: ${{ inputs.bump }}
+          INCLUDE_PATHS: ${{ inputs.include-paths }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+
+          # No globbing: the include paths are git-cliff globs, not shell ones.
+          set -f
+          paths=()
+          for path in $INCLUDE_PATHS; do paths+=(--include-path "$path"); done
+          set +f
+
+          cliff() { uvx --quiet git-cliff@2.14.2 --config .release-config/cliff.toml "${paths[@]}" "$@"; }
+
+          # Commits outside group 9 (tooling and process). A breaking commit is always in group 0.
+          # A commit with no group (a type cliff.toml doesn't list) counts as user-facing.
+          user_facing=$(cliff --unreleased --context |
+            jq '[.[0].commits[]? | select((.group // "") | startswith("<!-- 9 -->") | not)] | length')
+          if [ "$BUMP" = auto ] && [ "$user_facing" -eq 0 ]; then
+            echo "::notice::Nothing to release: the unreleased commits are all tooling or process."
+            echo "Nothing to release: the unreleased commits are all tooling or process. No tag." >>"$GITHUB_STEP_SUMMARY"
+            echo "release=false" >>"$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          tag=$(cliff --bumped-version --bump "$BUMP")
+          if ! [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::git-cliff gave '$tag', which is not a version tag like v0.1.0."
+            exit 1
+          fi
+          if git rev-parse --quiet --verify "refs/tags/$tag" >/dev/null || gh release view "$tag" --repo "$REPO" >/dev/null 2>&1; then
+            echo "::error::$tag is already released."
+            exit 1
+          fi
+          cliff --unreleased --bump "$BUMP" --strip all --output "$RUNNER_TEMP/release-notes.md"
+
+          {
+            echo "release=true"
+            echo "tag=$tag"
+          } >>"$GITHUB_OUTPUT"
+
+      - name: Tag and publish
+        id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE: ${{ steps.plan.outputs.release }}
+          TAG: ${{ steps.plan.outputs.tag }}
+          SHA: ${{ github.sha }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+
+          if [ "$RELEASE" != true ]; then
+            echo "released=false" >>"$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # The checkout kept no credentials, so the token goes to git through the environment, not argv.
+          export GIT_CONFIG_COUNT=1
+          export GIT_CONFIG_KEY_0="http.https://github.com/.extraheader"
+          GIT_CONFIG_VALUE_0="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+          export GIT_CONFIG_VALUE_0
+          remote="https://github.com/$REPO"
+
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+            tag --annotate --message "$TAG" "$TAG" "$SHA"
+          git push "$remote" "refs/tags/$TAG"
+
+          # --verify-tag: the release uses the annotated tag above and never makes a lightweight one.
+          # --fail-on-no-commits: refuses a forced bump when nothing was committed since the last release.
+          # If the release fails, the tag goes too, so that a rerun can use the same version.
+          if ! gh release create "$TAG" --repo "$REPO" --verify-tag --fail-on-no-commits --title "$TAG" \
+            --notes-file "$RUNNER_TEMP/release-notes.md"; then
+            git push "$remote" --delete "refs/tags/$TAG"
+            exit 1
+          fi
+
+          {
+            echo "released=true"
+            echo "tag=$TAG"
+            echo "version=${TAG#v}"
+          } >>"$GITHUB_OUTPUT"
+          echo "Released $TAG" >>"$GITHUB_STEP_SUMMARY"
