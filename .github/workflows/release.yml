@@ -2,8 +2,8 @@ name: Release
 
 # Reusable release workflow for khinse-labs repositories. It picks the next version from the
 # Conventional Commits since the last tag. It uses git-cliff with the shared cliff.toml of this
-# repository. It creates an annotated tag at the triggering commit and publishes a GitHub release with
-# the notes. Usage and caveats: README.md, section "Reusable release workflow".
+# repository. It creates the tag at the triggering commit and publishes a GitHub release with the
+# notes, in one call. Usage and caveats: README.md, section "Reusable release workflow".
 #
 # Skips cleanly (`released` = false) when every unreleased commit is tooling or process (cliff.toml
 # group 9: chore, ci, build, style, test) and `bump` is auto. A breaking commit is never in group 9.
@@ -28,9 +28,8 @@ on:
         default: ""
       cliff-ref:
         description: >-
-          Tag (or other ref) of khinse-labs/.github to read cliff.toml from. The default is the latest
-          tag that had the file when this workflow was tagged. Callers pin the workflow itself by tag,
-          so the default moves only with it.
+          Tag (or other ref) of khinse-labs/.github to read cliff.toml from. Callers pin the workflow
+          itself by tag, so the default changes only with a new workflow tag. See README.md.
         type: string
         default: v1.3.0
     outputs:
@@ -59,7 +58,7 @@ jobs:
       cancel-in-progress: false
     # The caller's job must grant this too: a called workflow can never hold more than its caller gives.
     permissions:
-      contents: write # pushes the tag and creates the release
+      contents: write # creates the tag and the release
     outputs:
       released: ${{ steps.release.outputs.released }}
       version: ${{ steps.release.outputs.version }}
@@ -98,8 +97,9 @@ jobs:
           sparse-checkout-cone-mode: false
           persist-credentials: false
 
-      # A pinned uv installs git-cliff from PyPI. PyPI never replaces a published version.
-      # setup-uv checks the checksum of the uv it downloads. No cache: this job can publish.
+      # A pinned uv installs git-cliff from PyPI at an exact version. PyPI does not let an owner replace
+      # the files of a version, but the package files are not hash-checked here. setup-uv checks the
+      # checksum of the uv it downloads. No cache: this job can publish.
       - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
         with:
           version: "0.12.7"
@@ -108,10 +108,8 @@ jobs:
       - name: Plan the release
         id: plan
         env:
-          GH_TOKEN: ${{ github.token }}
           BUMP: ${{ inputs.bump }}
           INCLUDE_PATHS: ${{ inputs.include-paths }}
-          REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
 
@@ -139,8 +137,9 @@ jobs:
             echo "::error::git-cliff gave '$tag', which is not a version tag like v0.1.0."
             exit 1
           fi
-          if git rev-parse --quiet --verify "refs/tags/$tag" >/dev/null || gh release view "$tag" --repo "$REPO" >/dev/null 2>&1; then
-            echo "::error::$tag is already released."
+          # gh release create uses a tag that exists already, so refuse it here.
+          if git rev-parse --quiet --verify "refs/tags/$tag" >/dev/null; then
+            echo "::error::The tag $tag exists already."
             exit 1
           fi
           cliff --unreleased --bump "$BUMP" --strip all --output "$RUNNER_TEMP/release-notes.md"
@@ -166,25 +165,16 @@ jobs:
             exit 0
           fi
 
-          # The checkout kept no credentials, so the token goes to git through the environment, not argv.
-          export GIT_CONFIG_COUNT=1
-          export GIT_CONFIG_KEY_0="http.https://github.com/.extraheader"
-          GIT_CONFIG_VALUE_0="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
-          export GIT_CONFIG_VALUE_0
-          remote="https://github.com/$REPO"
-
-          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
-            tag --annotate --message "$TAG" "$TAG" "$SHA"
-          git push "$remote" "refs/tags/$TAG"
-
-          # --verify-tag: the release uses the annotated tag above and never makes a lightweight one.
-          # --fail-on-no-commits: refuses a forced bump when no commit follows the last release.
-          # If the release fails, the tag goes too, so that a rerun can use the same version.
-          if ! gh release create "$TAG" --repo "$REPO" --verify-tag --fail-on-no-commits --title "$TAG" \
-            --notes-file "$RUNNER_TEMP/release-notes.md"; then
-            git push "$remote" --delete "refs/tags/$TAG"
+          if gh release view "$TAG" --repo "$REPO" >/dev/null 2>&1; then
+            echo "::error::$TAG is already released."
             exit 1
           fi
+
+          # One call makes the tag and the release, so a stop between the two cannot leave a tag with no
+          # release. The tag is lightweight. --target is the commit that triggered the run.
+          # --fail-on-no-commits refuses a forced bump when no commit follows the last release.
+          gh release create "$TAG" --repo "$REPO" --target "$SHA" --title "$TAG" \
+            --notes-file "$RUNNER_TEMP/release-notes.md" --fail-on-no-commits
 
           {
             echo "released=true"
