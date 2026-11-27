@@ -9,6 +9,10 @@ dictionaries:
 append: true
 ignore:
   - khinse-labs/spelling-accept.txt
+# A word with an underscore inside it is an identifier, such as a config key in a comment, not
+# English. A word with an underscore only at one end is still checked.
+filters:
+  - '[A-Za-z0-9]+_[A-Za-z0-9_]+'
 tests:
   - name: flags a misspelling
     input: Check teh logs.
@@ -17,3 +21,10 @@ tests:
   - name: accepts TechTerms and the accept list
     input: Deploy kubeadm and Zipkin, then push the unpushed commits.
     want: ''
+  - name: leaves an identifier with an underscore alone
+    input: Set teh_qzxv and git_url, then run on workflow_dispatch.
+    want: ''
+  - name: flags a misspelling with an underscore at one end
+    input: Check teh_ logs.
+    want: |
+      1:7:khinse-labs.Spelling:'teh_' is not in the dictionary. Fix it, or add the term to the accept.txt of your Vale vocabulary.
