@@ -8,8 +8,8 @@ name: Release
 # Skips cleanly (`released` = false) when every unreleased commit is tooling or process (cliff.toml
 # group 9: chore, ci, build, style, test) and `bump` is auto. A breaking commit is never in group 9.
 #
-# Releases are cut from the default branch only. A release made with GITHUB_TOKEN starts no other
-# workflow. So a caller that deploys does it in a job of its own. That job has `needs:` for this one
+# The workflow releases from the default branch only. A release made with GITHUB_TOKEN does not
+# start other workflows. So a caller that deploys does it in a job of its own. That job has `needs:` for this one
 # and reads `tag`.
 
 on:
@@ -29,18 +29,18 @@ on:
       cliff-ref:
         description: >-
           Tag (or other ref) of khinse-labs/.github to read cliff.toml from. Callers pin the workflow
-          itself by tag, so the default changes only with a new workflow tag. See README.md.
+          itself by tag. The default then changes only with a new workflow tag. See README.md.
         type: string
         default: v0.1.0
     outputs:
       released:
-        description: "true when a release was made, false when there was nothing to release."
+        description: "true when the workflow made a release, false when it found nothing to release."
         value: ${{ jobs.release.outputs.released }}
       version:
-        description: The new version without the leading v (for example 1.2.3). Empty when nothing was released.
+        description: The new version without the leading v (for example 1.2.3). Empty when the workflow did not release.
         value: ${{ jobs.release.outputs.version }}
       tag:
-        description: The new tag, with the leading v (for example v1.2.3). Empty when nothing was released.
+        description: The new tag, with the leading v (for example v1.2.3). Empty when the workflow did not release.
         value: ${{ jobs.release.outputs.tag }}
 
 permissions:
@@ -56,7 +56,8 @@ jobs:
     concurrency:
       group: release
       cancel-in-progress: false
-    # The caller's job must grant this too: a called workflow can never hold more than its caller gives.
+    # The caller's job must grant this too. A called workflow can only use the permissions its caller
+    # gives it.
     permissions:
       contents: write # creates the tag and the release
     outputs:
@@ -64,7 +65,7 @@ jobs:
       version: ${{ steps.release.outputs.version }}
       tag: ${{ steps.release.outputs.tag }}
     steps:
-      # Before the checkout, so a wrong ref costs nothing. Also checks the inputs.
+      # Runs before the checkout, to stop a wrong ref early. Also checks the inputs.
       - name: Check the ref and the inputs
         env:
           BUMP: ${{ inputs.bump }}

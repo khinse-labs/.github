@@ -1,11 +1,11 @@
 name: Bug report
-description: Report something that is broken or behaves unexpectedly.
+description: Report something that does not work or behaves unexpectedly.
 type: Bug
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for reporting a bug. For security vulnerabilities, do not open an issue; follow the security policy instead.
+        Thanks for reporting a bug. For security vulnerabilities, do not open an issue. Follow the security policy instead.
   - type: textarea
     id: description
     attributes:
@@ -35,7 +35,7 @@ body:
     id: actual
     attributes:
       label: Actual behaviour
-      description: What actually happened. Include screenshots or error messages if you have them.
+      description: What happened instead. Include screenshots or error messages if you have them.
     validations:
       required: true
   - type: input
@@ -43,7 +43,7 @@ body:
     attributes:
       label: Device and browser
       description: Device, operating system and browser, with versions.
-      placeholder: e.g. Pixel 8, Android 16, Chrome 140
+      placeholder: Pixel 8, Android 16, Chrome 140
     validations:
       required: true
   - type: input
@@ -51,6 +51,6 @@ body:
     attributes:
       label: Version
       description: The release tag or commit where you saw the bug.
-      placeholder: e.g. v0.4.0 or a1b2c3d
+      placeholder: v0.4.0 or a1b2c3d
     validations:
       required: false

@@ -2,7 +2,7 @@
 
 ## Maintainers
 
-khinse-labs repositories are run by the khinse-labs maintainers, who:
+The khinse-labs maintainers run the khinse-labs repositories. They:
 
 - set direction and priorities,
 - make final decisions on design, architecture and scope,
@@ -11,7 +11,7 @@ khinse-labs repositories are run by the khinse-labs maintainers, who:
 
 ## Decisions
 
-Significant decisions are recorded as architecture decision records (ADRs) in each repository.
+Each repository records its major decisions as architecture decision records (ADRs).
 
 Each ADR has a status:
 
@@ -21,12 +21,12 @@ Each ADR has a status:
 
 Accepted ADRs are not rewritten. To change a decision, write a new ADR that supersedes the old one.
 
-An ADR, or any doc change that records a decision, ships in the same PR as the code that implements it.
+An ADR, or any doc change that records a decision, goes in the same PR as the code that applies it.
 
 ## Contributors and AI agents
 
 - Contributors may open issues and pull requests.
 - Only maintainers merge, using squash merges. Nobody pushes directly to `main`.
-- **An AI agent may do anything its person can do**, such as open, triage or merge. Each person is responsible for what their agents do.
+- **An AI agent may do anything its person can do**, such as open an issue or PR, triage, or merge. Each person answers for what their agents do.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for expected behaviour.

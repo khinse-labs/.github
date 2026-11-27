@@ -1,4 +1,4 @@
-# Commit rules for every khinse-labs repository: https://commit-check.com
+# Commit rules for every khinse-labs repository, for commit-check (https://commit-check.com).
 # The Commit Check GitHub App applies this file to pull requests in every repository without a config
 # of its own. For the local hooks, a repository adds a .lefthook/cchk.toml that starts with
 #   inherit_from = "github:khinse-labs/.github@v0.1.0:cchk.toml"
@@ -24,7 +24,7 @@ allow_commit_types = [
 subject_capitalized = false
 subject_min_length = 5
 subject_max_length = 72
-# Branches catch up by merging main; the squash merge keeps main free of merge commits.
+# Branches catch up by merging main. The squash merge keeps main free of merge commits.
 allow_merge_commits = true
 allow_revert_commits = true
 allow_fixup_commits = true
@@ -33,14 +33,16 @@ allow_empty_commits = false
 ignore_authors = ["renovate[bot]", "dependabot[bot]"]
 
 [branch]
-# https://conventionalbranch.org: `<type>/<description>`, such as `feat/12-scan-barcode`. Four types
-# are enough, since the branch vanishes on squash merge: `chore` covers every commit type that is not
-# a feature, a fix or docs. The squash commit still uses the full commit types above.
+# https://conventionalbranch.org: `<type>/<description>`, such as `feat/12-scan-barcode`. Since the
+# branch vanishes on squash merge, `feat`, `fix`, `docs` and `chore` are enough. `chore` covers any
+# commit type that is not a feature, a fix or docs. The squash commit still uses the full commit
+# types above.
 conventional_branch = true
 allow_branch_types = ["feat", "fix", "docs", "chore"]
 ignore_authors = ["renovate[bot]", "dependabot[bot]"]
 
 [pull_request]
-# PRs are squash merged, so the GitHub App checks the message the squash would land on main
-# (built from the repository's merge settings, PR title included) instead of each commit.
+# PRs are squash merged. The GitHub App checks only the message that the squash merge will put on
+# main. GitHub builds that message from the repository's merge settings, PR title
+# included.
 check = "squash"
