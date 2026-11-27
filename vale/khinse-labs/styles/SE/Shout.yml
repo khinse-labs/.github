@@ -1,0 +1,6 @@
+# Simplified English: Finds capital letters used for emphasis.
+extends: existence
+message: "'%s': no capital letters for emphasis."
+level: error
+tokens:
+  - '\b(?:MUST|NEVER|ALWAYS|CRITICAL|IMPORTANT|REQUIRED|SHOULD|SHALL|ONLY|DON''T)\b'

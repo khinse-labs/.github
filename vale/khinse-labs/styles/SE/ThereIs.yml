@@ -1,0 +1,8 @@
+# Simplified English: Finds sentences that start with there is or there are.
+extends: existence
+message: "Start with the real subject, not '%s'."
+level: warning
+ignorecase: true
+tokens:
+  - there is
+  - there are

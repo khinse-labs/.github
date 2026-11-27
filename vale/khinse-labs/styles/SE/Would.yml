@@ -1,0 +1,7 @@
+# Simplified English: Finds would. Use the present tense if it is correct.
+extends: existence
+message: "'%s': use the present tense if it is correct."
+level: warning
+ignorecase: true
+tokens:
+  - would

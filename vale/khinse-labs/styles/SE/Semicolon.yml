@@ -1,0 +1,7 @@
+# Simplified English: A semicolon joins two sentences. Write two sentences.
+extends: existence
+message: "Split into separate sentences."
+level: error
+nonword: true
+tokens:
+  - ';'

@@ -1,0 +1,59 @@
+name: Vale package
+
+# Builds the khinse-labs Vale package from vale/khinse-labs and attaches it to a release as
+# khinse-labs.zip. Repositories name the asset URL in the Packages key of their .vale.ini. Usage:
+# README.md, section "Shared Vale config".
+#
+# A release made with GITHUB_TOKEN (for example by release.yml) starts no other workflow, so this
+# one does not run for it. Run it by hand then, with workflow_dispatch and the tag.
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Tag of an existing release, such as v0.2.0. The workflow builds the package at this tag.
+        type: string
+        required: true
+
+permissions: {}
+
+jobs:
+  package:
+    name: Build and upload khinse-labs.zip
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: write # uploads the release asset
+    steps:
+      # refs/tags/ makes the checkout fail for a branch name or a SHA.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: refs/tags/${{ inputs.tag || github.event.release.tag_name }}
+          persist-credentials: false
+
+      # The zip has one top-level folder, khinse-labs/, named like the file, as Vale requires. Fixed
+      # dates and a sorted file list make a rebuild of one tag give the same bytes. A repository can
+      # pin the digest of the archive, and --clobber then replaces it with an equal file.
+      - name: Build the package
+        working-directory: vale
+        run: |
+          set -euo pipefail
+          find khinse-labs -exec touch -h -d '1980-01-01T00:00:00Z' {} +
+          find khinse-labs -print | LC_ALL=C sort | zip -X -q "$RUNNER_TEMP/khinse-labs.zip" -@
+          if ! unzip -l "$RUNNER_TEMP/khinse-labs.zip" | grep -q ' khinse-labs/\.vale\.ini$'; then
+            echo "::error::khinse-labs.zip has no khinse-labs/.vale.ini."
+            exit 1
+          fi
+
+      - name: Upload to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag || github.event.release.tag_name }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          gh release upload "$TAG" "$RUNNER_TEMP/khinse-labs.zip" --clobber --repo "$REPO"
+          digest=$(sha256sum "$RUNNER_TEMP/khinse-labs.zip" | cut -d' ' -f1)
+          echo "Uploaded khinse-labs.zip to $TAG. SHA-256: \`$digest\`" >>"$GITHUB_STEP_SUMMARY"

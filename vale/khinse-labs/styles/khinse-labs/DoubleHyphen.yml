@@ -1,0 +1,9 @@
+# A double hyphen with spaces acts as a dash. The rule reads prose only, so a `--` comment
+# in a code fence, such as SQL, is not an alert.
+extends: existence
+message: "Do not use ' -- ' as a dash. Use a period, a comma or a colon."
+level: warning
+scope: text
+nonword: true
+tokens:
+  - ' -- '

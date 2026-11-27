@@ -1,0 +1,7 @@
+# Simplified English: Limits a list item to 6 sentences.
+extends: metric
+message: "List item has %s sentences (max 6)."
+level: warning
+scope: list
+formula: round(sentences)
+condition: "> 6.0"

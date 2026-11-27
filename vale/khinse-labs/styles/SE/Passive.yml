@@ -1,0 +1,7 @@
+# Simplified English: Finds a form of be plus a word that ends in -ed. It is a regex guess, so it can miss a verb such as written and can match an adjective.
+extends: existence
+message: "Possible passive voice '%s': name the actor if it matters."
+level: warning
+ignorecase: true
+tokens:
+  - '\b(?:is|are|was|were|be|been|being)\s+[a-z]{3,}ed\b'

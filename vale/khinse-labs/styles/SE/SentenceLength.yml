@@ -1,0 +1,7 @@
+# Simplified English: Limits a sentence to 25 words. The rule counts runs of non-space characters, because the metric rule splits words on hyphens, dots and slashes.
+extends: occurrence
+message: "The sentence has more than 25 words."
+level: error
+scope: sentence
+max: 25
+token: '\S+'

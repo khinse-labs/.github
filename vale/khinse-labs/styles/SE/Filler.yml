@@ -1,0 +1,16 @@
+# Simplified English: Finds filler words that add no meaning.
+extends: existence
+message: "Remove the filler '%s'."
+level: warning
+ignorecase: true
+tokens:
+  - very
+  - quite
+  - simply
+  - just
+  - easily
+  - basically
+  - really
+  - actually
+  - obviously
+  - please

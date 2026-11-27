@@ -1,0 +1,7 @@
+# Checks the spelling of prose. Terms for every khinse-labs repository are in spelling-accept.txt.
+# A repository adds its own terms to the accept.txt of a Vale vocabulary.
+extends: spelling
+message: "'%s' is not in the dictionary. Fix it, or add the term to the accept.txt of your Vale vocabulary."
+level: warning
+ignore:
+  - khinse-labs/spelling-accept.txt

@@ -1,0 +1,11 @@
+extends: substitution
+message: "Use '%s' instead of '%s'."
+level: warning
+ignorecase: true
+swap:
+  sub-agents?: subagent
+  Node\.js: Node
+  orchestrator: main session
+  (?-i:[Ff]rontmatter): front matter
+  work tree: worktree
+  run time: runtime

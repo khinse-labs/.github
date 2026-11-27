@@ -1,0 +1,4 @@
+# Picks the comments of .mts files and no strings, because test files hold fixture text.
+engine: tree-sitter
+scopes:
+  - expr: (comment)+ @comment

@@ -1,0 +1,11 @@
+# Picks the comments of .mts files and the strings that read as a message. A string counts as a
+# message when it has a common English word, so that paths, keys and flags are not linted.
+engine: tree-sitter
+scopes:
+  - expr: (comment)+ @comment
+  - name: message
+    expr: |
+      [((string (string_fragment) @message)
+        (#match? @message "(?i)\\b(the|is|to|and|of|that|it|you)\\b"))
+       ((template_string) @message
+        (#match? @message "(?i)\\b(the|is|to|and|of|that|it|you)\\b"))]

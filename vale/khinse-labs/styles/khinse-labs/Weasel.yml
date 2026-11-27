@@ -1,0 +1,32 @@
+# The write-good Weasel list without "many" and "few", which khinse-labs allows. It replaces
+# write-good.Weasel (turned off in the package .vale.ini). Compare with the vendored list when you
+# update it.
+extends: existence
+message: "'%s' is a weasel word"
+ignorecase: true
+level: warning
+tokens:
+  - are[ ]a[ ]number
+  - clearly
+  - completely
+  - exceedingly
+  - excellent
+  - extremely
+  - fairly
+  - huge
+  - interestingly
+  - is[ ]a[ ]number
+  - largely
+  - mostly
+  - obviously
+  - quite
+  - relatively
+  - remarkably
+  - several
+  - significantly
+  - substantially
+  - surprisingly
+  - tiny
+  - various
+  - vast
+  - very

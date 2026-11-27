@@ -1,0 +1,6 @@
+# Simplified English: Finds a run of capitalized words. Write the phrase in lower case. The labels WARNING, CAUTION, NOTE and STATUS are allowed.
+extends: existence
+message: "Capitalized phrase '%s': write it in lower case."
+level: error
+tokens:
+  - '\b(?!(?:WARNING|CAUTION|NOTE|STATUS)\b)[A-Z][A-Z'']+(?:\s+(?!(?:WARNING|CAUTION|NOTE|STATUS)\b)[A-Z][A-Z'']+)+\b'

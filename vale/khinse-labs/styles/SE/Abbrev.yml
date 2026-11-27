@@ -1,0 +1,10 @@
+# Simplified English: Replaces e.g., i.e. and etc. with plain words. Readers who learn English as a second language often do not know them.
+extends: substitution
+message: "Use '%s' instead of '%s'."
+level: error
+ignorecase: true
+nonword: true
+swap:
+  '\be\.g\.': for example or such as
+  '\bi\.e\.': that is
+  '\betc\.': name the items, or use such as

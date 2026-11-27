@@ -1,0 +1,16 @@
+extends: capitalization
+message: "'%s' should use sentence case"
+level: warning
+scope: heading
+match: $sentence
+exceptions:
+  - marketplace-internal
+  - orchestration
+  - writing
+  - '@?imports'
+  - '\.?gitignore'
+  - 'scripts/lint-docs\.sh'
+  - 'CLAUDE\.md'
+  - Claude Code
+  - Claude
+  - Simplified English

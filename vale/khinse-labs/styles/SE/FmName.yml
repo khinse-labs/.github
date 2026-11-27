@@ -1,0 +1,8 @@
+# Simplified English: The front matter name uses only lowercase letters, digits and hyphens.
+extends: existence
+message: "The name '%s' must be lowercase letters, digits and hyphens."
+level: error
+scope: text.frontmatter.name
+nonword: true
+tokens:
+  - '^.*[^a-z0-9-].*$'

@@ -1,0 +1,10 @@
+# Filler phrases. SE.Filler and SE.Words find the single filler words, so they are not here.
+extends: existence
+message: "Remove the filler '%s'."
+level: warning
+ignorecase: true
+tokens:
+  - please note
+  - note that
+  - it is important to
+  - make sure that
