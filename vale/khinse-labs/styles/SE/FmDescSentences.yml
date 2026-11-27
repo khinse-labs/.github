@@ -5,3 +5,18 @@ level: warning
 scope: text.frontmatter.description
 formula: round(sentences)
 condition: "> 6.0"
+tests:
+  - name: flags a description of seven sentences
+    input: |
+      ---
+      description: One. Two. Three. Four. Five. Six. Seven.
+      ---
+      Body.
+    contains: SE.FmDescSentences
+  - name: leaves a description of six sentences alone
+    input: |
+      ---
+      description: One. Two. Three. Four. Five. Six.
+      ---
+      Body.
+    want: ''

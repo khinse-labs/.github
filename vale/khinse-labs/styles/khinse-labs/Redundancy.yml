@@ -19,3 +19,11 @@ tokens:
   - join together
   - repeat again
   - still remains
+tests:
+  - name: flags a redundant phrase
+    input: The end result is good.
+    want: |
+      1:5:khinse-labs.Redundancy:'end result' says one thing twice. Use the shorter form.
+  - name: leaves the short form alone
+    input: The result is good.
+    want: ''

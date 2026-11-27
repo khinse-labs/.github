@@ -5,3 +5,10 @@ level: error
 scope: sentence
 max: 25
 token: '\S+'
+tests:
+  - name: flags a sentence of 26 words
+    input: a b c d e f g h i j k l m n o p q r s t u v w x y z.
+    contains: SE.SentenceLength
+  - name: leaves a sentence of 25 words alone
+    input: a b c d e f g h i j k l m n o p q r s t u v w x y.
+    want: ''

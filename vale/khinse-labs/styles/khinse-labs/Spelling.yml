@@ -3,5 +3,17 @@
 extends: spelling
 message: "'%s' is not in the dictionary. Fix it, or add the term to the accept.txt of your Vale vocabulary."
 level: warning
+# techterms comes from the TechTerms package. append keeps Vale's own English dictionary first.
+dictionaries:
+  - techterms
+append: true
 ignore:
   - khinse-labs/spelling-accept.txt
+tests:
+  - name: flags a misspelling
+    input: Check teh logs.
+    want: |
+      1:7:khinse-labs.Spelling:'teh' is not in the dictionary. Fix it, or add the term to the accept.txt of your Vale vocabulary.
+  - name: accepts TechTerms and the accept list
+    input: Deploy kubeadm and Zipkin, then push the unpushed commits.
+    want: ''

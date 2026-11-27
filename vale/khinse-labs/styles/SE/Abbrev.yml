@@ -8,3 +8,11 @@ swap:
   '\be\.g\.': for example or such as
   '\bi\.e\.': that is
   '\betc\.': name the items, or use such as
+tests:
+  - name: flags a Latin abbreviation
+    input: Use a tool, e.g. Vale.
+    want: |
+      1:13:SE.Abbrev:Use 'for example or such as' instead of 'e.g.'.
+  - name: leaves the plain words alone
+    input: Use a tool, such as Vale.
+    want: ''

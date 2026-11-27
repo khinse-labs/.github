@@ -5,3 +5,11 @@ level: warning
 ignorecase: true
 tokens:
   - would
+tests:
+  - name: flags would
+    input: The script would fail.
+    want: |
+      1:12:SE.Would:'would': use the present tense if it is correct.
+  - name: leaves the present tense alone
+    input: The script fails.
+    want: ''

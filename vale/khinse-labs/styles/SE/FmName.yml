@@ -6,3 +6,18 @@ scope: text.frontmatter.name
 nonword: true
 tokens:
   - '^.*[^a-z0-9-].*$'
+tests:
+  - name: flags a name with capitals
+    input: |
+      ---
+      name: MySkill
+      ---
+      Body.
+    contains: SE.FmName
+  - name: leaves a kebab-case name alone
+    input: |
+      ---
+      name: my-skill
+      ---
+      Body.
+    want: ''

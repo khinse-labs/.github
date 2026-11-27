@@ -14,3 +14,11 @@ exceptions:
   - Claude Code
   - Claude
   - Simplified English
+tests:
+  - name: flags a title-case heading
+    input: '# Shared Config File'
+    want: |
+      1:3:khinse-labs.Headings:'Shared Config File' should use sentence case
+  - name: leaves a sentence-case heading alone
+    input: '# Shared config file'
+    want: ''

@@ -14,3 +14,11 @@ tokens:
   - actually
   - obviously
   - please
+tests:
+  - name: flags a filler word
+    input: Just run the tests.
+    want: |
+      1:1:SE.Filler:Remove the filler 'Just'.
+  - name: leaves the plain sentence alone
+    input: Run the tests.
+    want: ''

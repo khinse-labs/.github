@@ -1,6 +1,31 @@
 # The write-good Weasel list without "many" and "few", which khinse-labs allows. It replaces
-# write-good.Weasel (turned off in the package .vale.ini). Compare with the vendored list when you
-# update it.
+# write-good.Weasel (turned off in the package .vale.ini). Compare with the list of
+# write-good.Weasel when you update the write-good package.
+#
+# The token list is derived from write-good (https://github.com/vale-cli/write-good), under this
+# licence:
+#
+# The MIT License (MIT)
+#
+# Copyright (c) 2014 Brian Ford
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
 extends: existence
 message: "'%s' is a weasel word"
 ignorecase: true
@@ -30,3 +55,11 @@ tokens:
   - various
   - vast
   - very
+tests:
+  - name: flags a weasel word
+    input: The fix is clearly better.
+    want: |
+      1:12:khinse-labs.Weasel:'clearly' is a weasel word
+  - name: leaves many and few alone
+    input: Many tests pass and few fail.
+    want: ''

@@ -7,3 +7,11 @@ scope: raw
 nonword: true
 tokens:
   - '—'
+tests:
+  - name: flags an em dash
+    input: Ship it — now.
+    want: |
+      1:9:khinse-labs.Dashes:Do not use the em dash. Use a period, a comma or a colon.
+  - name: leaves a comma alone
+    input: Ship it, now.
+    want: ''

@@ -8,3 +8,11 @@ tokens:
   - note that
   - it is important to
   - make sure that
+tests:
+  - name: flags a filler phrase
+    input: Note that the build is slow.
+    want: |
+      1:1:khinse-labs.Filler:Remove the filler 'Note that'.
+  - name: leaves the plain sentence alone
+    input: The build is slow.
+    want: ''

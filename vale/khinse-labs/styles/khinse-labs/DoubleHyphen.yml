@@ -7,3 +7,11 @@ scope: text
 nonword: true
 tokens:
   - ' -- '
+tests:
+  - name: flags a spaced double hyphen
+    input: Ship it -- now.
+    want: |
+      1:8:khinse-labs.DoubleHyphen:Do not use ' -- ' as a dash. Use a period, a comma or a colon.
+  - name: leaves a flag in a code span alone
+    input: Run `ls -- now` first.
+    want: ''

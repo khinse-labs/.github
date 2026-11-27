@@ -20,14 +20,83 @@ on:
 permissions: {}
 
 jobs:
+  # Downloads Vale and the packages that the package names. It runs apart from the upload, with a
+  # token that can only read.
+  test:
+    name: Test the rules
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      # refs/tags/ makes the checkout fail for a branch name or a SHA.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: refs/tags/${{ inputs.tag || github.event.release.tag_name }}
+          persist-credentials: false
+
+      # Vale 3.28.1 ignores the #sha256: of a Packages entry, so this step checks each one itself.
+      # It reads the entries from the package .vale.ini, the one place they are written. Every
+      # entry must be an https URL with a digest. `vale sync` downloads them again in the next step.
+      - name: Check the package digests
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/package-check"
+          entries=$(sed -e ':a' -e '/\\$/N; s/\\\n//; ta' vale/khinse-labs/.vale.ini |
+            sed -n 's/^Packages[[:space:]]*=//p' | tr ',' '\n' |
+            sed 's/^[[:space:]]*//; s/[[:space:]]*$//' | grep -v '^$' || true)
+          if [ -z "$entries" ]; then
+            echo "::error::vale/khinse-labs/.vale.ini has no Packages entries."
+            exit 1
+          fi
+          while IFS= read -r entry; do
+            url=${entry%%#*}
+            digest=${entry#*#sha256:}
+            if [[ $url != https://* || $entry != *'#sha256:'* || ! $digest =~ ^[0-9a-f]{64}$ ]]; then
+              echo "::error::Packages entry '$entry' is not an https URL with #sha256:<digest>."
+              exit 1
+            fi
+            file="$RUNNER_TEMP/package-check/$(basename "$url")"
+            curl -sSfL -o "$file" "$url"
+            echo "$digest  $file" | sha256sum -c -
+          done <<<"$entries"
+
+      # The digest is pinned here, not read from the checksums file of the same release, so a
+      # replaced archive fails the check.
+      - name: Install Vale
+        env:
+          VALE_VERSION: 3.28.1
+          VALE_SHA256: 068954ad869ebec24b8dec6ebcd1cbb1fd5f5a83e966a35baedfae8b2cdc093a
+        run: |
+          set -euo pipefail
+          archive="vale_${VALE_VERSION}_Linux_64-bit.tar.gz"
+          curl -sSfL -o "$RUNNER_TEMP/$archive" \
+            "https://github.com/vale-cli/vale/releases/download/v${VALE_VERSION}/$archive"
+          echo "$VALE_SHA256  $RUNNER_TEMP/$archive" | sha256sum -c -
+          mkdir -p "$RUNNER_TEMP/vale-bin"
+          tar -xzf "$RUNNER_TEMP/$archive" -C "$RUNNER_TEMP/vale-bin" vale
+          echo "$RUNNER_TEMP/vale-bin" >>"$GITHUB_PATH"
+
+      # Installs the package from its folder into a scratch StylesPath, with the packages it names,
+      # as a repository would. The rules then run their own tests, which need the TechTerms
+      # dictionary. The checkout stays clean for the zip.
+      - name: Test the rules
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/vale-test"
+          cd "$RUNNER_TEMP/vale-test"
+          printf 'StylesPath = styles\nPackages = %s\n' "$GITHUB_WORKSPACE/vale/khinse-labs" >.vale.ini
+          vale sync --plain-progress
+          vale test --coverage styles/khinse-labs styles/SE
+
   package:
     name: Build and upload khinse-labs.zip
+    needs: test
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     permissions:
       contents: write # uploads the release asset
     steps:
-      # refs/tags/ makes the checkout fail for a branch name or a SHA.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: refs/tags/${{ inputs.tag || github.event.release.tag_name }}

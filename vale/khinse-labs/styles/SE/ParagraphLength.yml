@@ -5,3 +5,10 @@ level: warning
 scope: paragraph
 formula: round(sentences)
 condition: "> 6.0"
+tests:
+  - name: flags a paragraph of seven sentences
+    input: One. Two. Three. Four. Five. Six. Seven.
+    contains: SE.ParagraphLength
+  - name: leaves a paragraph of six sentences alone
+    input: One. Two. Three. Four. Five. Six.
+    want: ''

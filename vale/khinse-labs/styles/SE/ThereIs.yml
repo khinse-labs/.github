@@ -6,3 +6,11 @@ ignorecase: true
 tokens:
   - there is
   - there are
+tests:
+  - name: flags a sentence that starts with there is
+    input: There is a bug in the parser.
+    want: |
+      1:1:SE.ThereIs:Start with the real subject, not 'There is'.
+  - name: leaves the real subject alone
+    input: The parser has a bug.
+    want: ''
