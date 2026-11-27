@@ -1,11 +1,11 @@
 name: Vale package
 
 # Builds the khinse-labs Vale package from vale/khinse-labs and attaches it to a release as
-# khinse-labs.zip. Repositories name the asset URL in the Packages key of their .vale.ini. Usage:
+# khinse-labs.zip. Repositories put the asset URL in the Packages key of their .vale.ini. Usage:
 # README.md, section "Shared Vale config".
 #
-# A release made with GITHUB_TOKEN (for example by release.yml) starts no other workflow, so this
-# one does not run for it. Run it by hand then, with workflow_dispatch and the tag.
+# A release made with GITHUB_TOKEN (for example by release.yml) does not start other workflows,
+# this one included. Run it by hand then, with workflow_dispatch and the tag.
 
 on:
   release:
@@ -36,7 +36,7 @@ jobs:
           persist-credentials: false
 
       # Vale 3.28.1 ignores the #sha256: of a Packages entry, so this step checks each one itself.
-      # It reads the entries from the package .vale.ini, the one place they are written. Every
+      # It reads the entries from the package .vale.ini, the one place that lists them. Every
       # entry must be an https URL with a digest. `vale sync` downloads them again in the next step.
       - name: Check the package digests
         run: |
@@ -61,8 +61,8 @@ jobs:
             echo "$digest  $file" | sha256sum -c -
           done <<<"$entries"
 
-      # The digest is pinned here, not read from the checksums file of the same release, so a
-      # replaced archive fails the check.
+      # This step pins the digest instead of reading it from the checksums file of the same release.
+      # A replaced archive then fails the check.
       - name: Install Vale
         env:
           VALE_VERSION: 3.28.1
@@ -78,14 +78,16 @@ jobs:
           echo "$RUNNER_TEMP/vale-bin" >>"$GITHUB_PATH"
 
       # Installs the package from its folder into a scratch StylesPath, with the packages it names,
-      # as a repository would. The rules then run their own tests, which need the TechTerms
-      # dictionary. The checkout stays clean for the zip.
+      # as a repository does. The rules then run their own tests, which need the TechTerms
+      # dictionary. The sync writes nothing to the checkout, which the zip packs. The ini lists the
+      # grammars of the Prose view, as a repository's does: one sync does not install the package's.
       - name: Test the rules
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/vale-test"
           cd "$RUNNER_TEMP/vale-test"
-          printf 'StylesPath = styles\nPackages = %s\n' "$GITHUB_WORKSPACE/vale/khinse-labs" >.vale.ini
+          printf 'StylesPath = styles\nPackages = %s\nGrammars = yaml, toml\n' \
+            "$GITHUB_WORKSPACE/vale/khinse-labs" >.vale.ini
           vale sync --plain-progress
           vale test --coverage styles/khinse-labs styles/SE
 

@@ -1,6 +1,10 @@
 # khinse-labs/.github
 
+<!-- vale ai-tells.NounString = NO -->
+
 Default community health files and templates for every khinse-labs repository.
+
+<!-- vale ai-tells.NounString = YES -->
 
 GitHub uses a file from here for any repository in the organisation that does not have its own file of that type. A repository's own file always takes priority.
 
@@ -13,7 +17,7 @@ GitHub uses a file from here for any repository in the organisation that does no
 | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) | Contributor Covenant 2.1 |
 | [`SECURITY.md`](SECURITY.md) | How to report a vulnerability privately |
 | [`SUPPORT.md`](SUPPORT.md) | Where to get help |
-| [`GOVERNANCE.md`](GOVERNANCE.md) | How decisions are made |
+| [`GOVERNANCE.md`](GOVERNANCE.md) | How the organisation decides |
 | [`profile/README.md`](profile/README.md) | The organisation's public landing page |
 | [`.github/workflows/release.yml`](.github/workflows/release.yml) | Reusable release workflow, described [below](#reusable-release-workflow) |
 | [`cliff.toml`](cliff.toml) | Shared git-cliff config: release notes and the next version, read by the release workflow |
@@ -22,10 +26,10 @@ GitHub uses a file from here for any repository in the organisation that does no
 
 ## Notes for maintainers
 
-- If a repository has its own `.github/ISSUE_TEMPLATE/` folder, none of these issue forms are used there.
+- If a repository has its own `.github/ISSUE_TEMPLATE/` folder, GitHub uses none of these issue forms there.
 - The issue forms set the org issue types Bug, Feature and Task. They do not apply labels or add issues to a project: each product's own project adds its repository's issues with its auto-add workflow.
-- Licences cannot be set here; add a `LICENSE` to each repository.
-- Organisation settings (new repositories, labels, projects) are documented for maintainers in the organisation's internal docs.
+- This repository cannot set a default licence. Add a `LICENSE` to each repository.
+- The organisation's internal docs describe the organisation settings (new repositories, labels, projects) for maintainers.
 - This repository must be public for the defaults to apply.
 
 See GitHub's guide to [default community health files](https://docs.github.com/en/communities/setting-up-your-project-for-healthy-contributions/creating-a-default-community-health-file).
@@ -97,7 +101,7 @@ jobs:
 - **Keep the default of `cliff-ref` on a tag that exists.** If a change to `cliff.toml` alters versions or notes, merge it and make the tag. Then raise the default in a new PR and make a new tag. A change to comments only does not need a new default.
 - **The calling job needs `contents: write`.** A called workflow can only use the permissions its caller gives it. Keep `permissions: contents: read` for the rest of the caller.
 - **A release made with `GITHUB_TOKEN` does not start other workflows.** Workflows on `release` or on a pushed tag do not run. So deploy in a job of the caller. That job has `needs:` for the release job and reads `tag` (see the example). Do not deploy in a separate workflow on the tag.
-- **Releases are cut from the default branch only.** The workflow fails on any other ref before it checks anything out, and on a tag-triggered caller.
+- **Only the default branch can release.** The workflow fails on any other ref before it checks anything out, and on a tag-triggered caller.
 - **One release at a time.** The called job has `concurrency: group: release` without cancelling. Do not use the group `release` in the caller: the same group in both deadlocks.
 - **A tag ruleset can block it.** If the repository restricts who creates `v*` tags, `github-actions` needs a bypass, because the workflow creates the tag with `GITHUB_TOKEN`.
 - **One call makes the tag and the release.** A cancelled or timed-out run cannot leave a tag with no release. The tag is lightweight, not annotated.
@@ -119,6 +123,11 @@ jobs:
 
 The `.vale.ini` turns the styles and Vale's own style on for every file. `Prompts` is on only for `AGENTS.md`, `CLAUDE.md` and `SKILL.md` files, and `TechTerms` only adds a spelling dictionary. The `.vale.ini` also sets the rule levels, and it turns off the `ai-tells` rules that repeat a rule of `khinse-labs` or `SE`. It pins each package to a release and to the SHA-256 of its archive. [`vale-package.yml`](.github/workflows/vale-package.yml) runs the tests of the rules, then packs the folder as `khinse-labs.zip` and attaches it to each release of this repository.
 
+Vale lints the prose of more than Markdown:
+
+- **YAML and TOML files.** The `Prose` view in `config/views` picks their comments and the string values of some keys, at any depth. The keys are `name`, `description`, `title`, `summary`, `label`, `placeholder`, `message` and `about`. It also picks the items of an `options` list. Examples are manifests, issue forms and workflow inputs. Other keys, ids and `run:` scripts are not linted.
+- **Front matter.** Vale lints each top-level string value of the YAML front matter of a Markdown file by default, such as the `description` of a `SKILL.md`. It does not lint nested values or lists there.
+
 ### Repository config
 
 A repository adds the package to the `.vale.ini` at its root:
@@ -126,7 +135,10 @@ A repository adds the package to the `.vale.ini` at its root:
 ```ini
 StylesPath = .vale/styles
 Packages = https://github.com/khinse-labs/.github/releases/download/<tag>/khinse-labs.zip
+Grammars = yaml, toml
 ```
+
+The package names the same grammars, but the first `vale sync` installs only the grammars in the repository's file. Without them, Vale finds the comments of YAML and TOML files by their `#`, even inside a string.
 
 `vale sync` downloads the package and the packages it names, so it needs network access. It copies the styles into `.vale/styles` and the package config into `.vale/styles/.vale-config/`. After the sync, `vale` runs offline. Vale reads the package config first and the repository's file last. In the repository's file, `BasedOnStyles` adds styles to the list of the package. Any other key, such as a rule level, replaces the value of the package.
 
@@ -147,6 +159,7 @@ A repository adds its own rules and terms after the package, in the same file:
 ```ini
 StylesPath = .vale/styles
 Packages = https://github.com/khinse-labs/.github/releases/download/<tag>/khinse-labs.zip
+Grammars = yaml, toml
 Vocab = Repo
 
 [*]
@@ -158,7 +171,9 @@ write-good.Passive = NO
 - `Local` is a style of the repository, in `.vale/styles/Local/`. The package does not use a style of that name, so `vale sync` leaves it alone.
 - `Vocab = Repo` reads terms from `.vale/styles/config/vocabularies/Repo/accept.txt`. `khinse-labs.Spelling` accepts them too. Add a term for every repository to [`spelling-accept.txt`](vale/khinse-labs/styles/khinse-labs/spelling-accept.txt) instead.
 - A rule level in `[*]` replaces the level of the package. `NO` turns the rule off.
-- To lint the prose in `.mts` files, add `Grammars = typescript` and `[*.mts]` sections with `View = Mts` or `View = Comments`. A glob for `.mts` files does not make `vale sync` install the TypeScript grammar, so name it. The comment in the package [`.vale.ini`](vale/khinse-labs/.vale.ini) has an example.
+- To lint the prose in `.mts` files, add `Grammars = typescript` and `[*.mts]` sections with `View = Mts` or `View = Comments`. A glob for `.mts` files does not make `vale sync` install the TypeScript grammar, so name it. The comment in the package [`.vale.ini`](vale/khinse-labs/.vale.ini) has an example. Keep `yaml, toml` in that line too (`Grammars = yaml, toml, typescript`), so that the first sync installs them.
+- To read YAML or TOML files through another view, use the glob of the package: `[*.{yml,yaml}]` or `[*.toml]`. If two sections match a file, Vale picks one of them at random.
+- `vale .` skips the `StylesPath`. A Vale rule file outside it goes through the `Prose` view. Vale then lints the `message`, the `description` and the test names of the rule. It does not lint the tokens or the test inputs.
 
 ### Local use
 
@@ -182,6 +197,6 @@ Run `vale sync` again after you change the `Packages` line. Repositories run Val
 
 ## Licence
 
-The files in this repository are dedicated to the public domain under [CC0 1.0](LICENSE). Copy and adapt them freely. The exception is [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md), which is adapted from the Contributor Covenant and stays under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The Vale package names other packages but does not contain them. `vale sync` downloads each one, with its own licence, from its repository. The word list of `khinse-labs.Weasel` comes from write-good and keeps its MIT licence, which is in the header of [`Weasel.yml`](vale/khinse-labs/styles/khinse-labs/Weasel.yml).
+The authors dedicate the files in this repository to the public domain under [CC0 1.0](LICENSE). Copy and adapt them freely. The exception is [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md), which adapts the Contributor Covenant and stays under [<!-- vale SE.CapsPhrase = NO -->CC BY<!-- vale SE.CapsPhrase = YES --> 4.0](https://creativecommons.org/licenses/by/4.0/). The Vale package names other packages but does not contain them. `vale sync` downloads each one, with its own licence, from its repository. The word list of `khinse-labs.Weasel` comes from write-good and keeps its MIT licence, which is in the header of [`Weasel.yml`](vale/khinse-labs/styles/khinse-labs/Weasel.yml).
 
 This licence covers this repository only. It does not apply to other khinse-labs repositories.

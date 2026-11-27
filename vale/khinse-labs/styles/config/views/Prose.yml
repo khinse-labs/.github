@@ -1,0 +1,13 @@
+# Picks the prose of a YAML or TOML file: the string values of these keys at any depth, such as the
+# name and description of a manifest, an issue form or a workflow input. Keys, ids and `run:`
+# scripts are not picked. Vale lints the comments of the file too, by the yaml or toml grammar.
+# The items of an `options` list are joined, one per line, so each alert lands on its own item.
+engine: dasel
+scopes:
+  - name: text
+    expr: >-
+      search($key == "name" || $key == "description" || $key == "title" || $key == "summary" ||
+      $key == "label" || $key == "placeholder" || $key == "message" || $key == "about")
+  - name: text
+    expr: search($key == "options")
+    join: "\n"
