@@ -30,4 +30,3 @@ tsconfig
 tool_input
 dedup
 awkPath
-reviewdog

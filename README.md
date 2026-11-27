@@ -19,7 +19,6 @@ GitHub uses a file from here for any repository in the organisation that does no
 | [`cliff.toml`](cliff.toml) | Shared git-cliff config: release notes and the next version, read by the release workflow |
 | [`vale/khinse-labs/`](vale/khinse-labs/) | Shared Vale package: the prose rules and their base config, described [below](#shared-vale-config) |
 | [`.github/workflows/vale-package.yml`](.github/workflows/vale-package.yml) | Builds `khinse-labs.zip` from `vale/khinse-labs/` and attaches it to a release |
-| [`.github/workflows/vale.yml`](.github/workflows/vale.yml) | Reusable Vale check for pull requests, described [below](#shared-vale-config) |
 
 ## Notes for maintainers
 
@@ -149,61 +148,22 @@ write-good.Passive = NO
 - A rule level in `[*]` replaces the level of the package. `NO` turns the rule off.
 - To lint the prose in `.mts` files, add `[*.mts]` sections with `View = Mts` or `View = Comments`. The comment in the package [`.vale.ini`](vale/khinse-labs/.vale.ini) has an example.
 
-### Caller
-
-A repository's Vale workflow is a short caller:
-
-```yaml
-name: Vale
-
-on:
-  pull_request:
-
-permissions:
-  contents: read
-
-jobs:
-  vale:
-    permissions:
-      contents: read
-      checks: write # github-pr-check writes a check run
-      pull-requests: read # reviewdog reads the diff of the pull request
-    # Pin the latest tag of khinse-labs/.github.
-    uses: khinse-labs/.github/.github/workflows/vale.yml@<tag>
-    # with:
-    #   files: docs
-```
-
-The called workflow sets no permissions of its own. Its job gets the permissions of the calling job, so grant what the reporter needs (see `reporter` below). With `reporter: github-pr-review`, grant `pull-requests: write` instead of `read`.
-
-### Inputs
-
-| Input | Default | Meaning |
-| --- | --- | --- |
-| `files` | `.` | What Vale lints: a file or folder, a JSON list such as `'["docs", "README.md"]'`, or `all`. |
-| `vale-version` | `3.28.1` | Vale version to install, without the `v`. A digest pin needs Vale 3.29.0 or later. Vale 3.29.0 came out on 2026-11-26, so under the rule of 7 days for a new release, use it from 2026-12-03. |
-| `fail-on-error` | `true` | Fail the job when Vale reports an alert at the level `error`. Warnings never fail it. |
-| `reporter` | `github-pr-check` | reviewdog reporter. Every reporter needs `pull-requests: read` for the diff. `github-pr-check` and `github-check` write a check run and need `checks: write`. `github-pr-review` writes review comments with suggested fixes and needs `pull-requests: write`. `github-pr-annotations` writes annotations through the job log and needs no write permission. |
-| `filter-mode` | `added` | reviewdog filter mode. `added` reports alerts on added or changed lines only. `diff_context`, `file` and `nofilter` report more. |
-
 ### Local use
 
 Install Vale. Then, at the root of the repository:
 
 ```sh
 vale sync
-vale .
+vale <paths>
 ```
 
-Run `vale sync` again after you change the `Packages` line.
+Run `vale sync` again after you change the `Packages` line. Repositories run Vale in their pre-commit hook or their task runner.
 
 ### Notes
 
-- **On GitHub Free, the check cannot block a merge in a private repository.** Rulesets and branch protection make a check required, and GitHub Free has them for public repositories only. In a private repository the check only reports.
-- **Pin the caller and the package to a tag.** A new tag can bring new rules. Raise the tag in the workflow and in `.vale.ini` together.
+- **Pin the package to a tag.** A new tag can bring new rules.
 - **`vale-package.yml` runs when someone publishes a release.** A release made with `GITHUB_TOKEN`, such as one from `release.yml`, starts no other workflow. Then run `vale-package.yml` by hand with the tag. The build gives the same bytes for the same tag, so a second run keeps a pinned digest valid.
 - **Keep immutable releases off for this repository.** `vale-package.yml` uploads the zip after the release is out, and GitHub refuses a new asset on an immutable release. To turn them on, attach the zip to the draft before you publish it.
-- **A pull request from a fork gets a read-only token.** reviewdog cannot write a check run or a review there. It writes annotations through the job log instead.
 - **Do not edit the synced styles.** `vale sync` replaces them. Change the rules here and make a new tag.
 - The `write-good` style is an unchanged copy of v0.5.0 (see its [`SOURCE.md`](vale/khinse-labs/styles/write-good/SOURCE.md)). Turn its rules on or off in the package `.vale.ini`, not in the rule files.
 
