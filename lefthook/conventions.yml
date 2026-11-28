@@ -1,37 +1,43 @@
-# Commit, branch, author, tag, file and push conventions for khinse-labs repositories, checked by
-# commit-check (https://commit-check.com) against the repository's .lefthook/cchk.toml, which inherits ours:
+# The Commit Check GitHub App does not read the file that these hooks use. If a repo has a config
+# that inherits ours, the App stops its reports on pull requests (seen 2026-10-09 and 2026-10-10).
+# If it has none, the App checks them against our cchk.toml.
 #
-#   inherit_from = "github:khinse-labs/.github@v0.1.0:cchk.toml"
-#
-# Not at a path the Commit Check GitHub App reads (cchk.toml, commit-check.toml, or either under
-# .github/): with a repository config that inherits, the App stopped reporting on pull requests
-# (seen 2026-10-09 and 2026-10-10). Without one, it checks them against our cchk.toml.
-#
-# Needs uv (https://docs.astral.sh/uv/) and lefthook (`uv tool install lefthook`, then
-# `lefthook install` in the repository). Use it from the repository's lefthook.yml:
-#
-#   remotes:
-#     - git_url: https://github.com/khinse-labs/.github
-#       ref: v0.1.0
-#       configs:
-#         - lefthook/conventions.yml
-#
-# lefthook skips the pre-commit and pre-push jobs when no files changed (an empty commit, or a
-# push of commits that change no files). The Commit Check GitHub App still checks branch names and
-# authors on pull requests.
+# lefthook skips the pre-commit and pre-push jobs when no files changed, such as for an empty
+# commit. The App still checks branch names and authors on pull requests.
 
 commit-msg:
   jobs:
     - name: commit-check
       run: uvx --quiet commit-check@2.18.3 --no-banner --config .lefthook/cchk.toml --message {1}
+    # Without a .vale.ini the repository does not use Vale. With one, a missing vale fails, as uv does.
+    - name: vale
+      run: |
+        [ -f .vale.ini ] || exit 0
+        case "$(head -n 1 {1})" in
+          "Merge "* | "Revert "* | "Reapply "* | "fixup! "* | "squash! "* | "amend! "*) exit 0 ;;
+        esac
+        vale --path=COMMIT_EDITMSG < {1}
 
 pre-commit:
   jobs:
     - name: commit-check
       run: uvx --quiet commit-check@2.18.3 --no-banner --config .lefthook/cchk.toml --branch --author-name --author-email
+    # In an .ini file, cloc takes ";" as the one comment mark. The job reads .ini files as TOML,
+    # where "#" starts a comment.
+    - name: comment-ratio
+      run: |
+        # A pipe hides the status of cloc in sh, so the output goes to a variable first. A file
+        # that cloc does not count gives no output, and the check passes.
+        rows=$(mise x cloc@2.12 -- cloc --quiet --by-file --csv --hide-rate --force-lang=TOML,ini {staged_files}) || {
+          echo "comment-ratio: cloc failed, so the comment ratio is unchecked" >&2; exit 1
+        }
+        printf '%s\n' "$rows" |
+          awk -F, 'NR > 1 && $1 != "SUM" && $5 >= 5 && $4 * 2 > $5 {
+            printf "%s: %d comment lines for %d code lines, more than half\n", $2, $4, $5; bad = 1
+          } END { exit bad }'
 
 pre-push:
   jobs:
     - name: commit-check
       run: uvx --quiet commit-check@2.18.3 --no-banner --config .lefthook/cchk.toml --tag --files --no-force-push
-      use_stdin: true # the pushed refs, for --no-force-push
+      use_stdin: true # the pushed refs, for the no-force-push check

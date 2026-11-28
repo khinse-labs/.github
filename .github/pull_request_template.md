@@ -12,9 +12,9 @@ Closes #
 
 - [ ] `feat`: new feature
 - [ ] `fix`: bug fix
-- [ ] `docs`: documentation only
+- [ ] `docs`: documentation and nothing else
 - [ ] `refactor`: no behaviour change
-- [ ] `test`: tests only
+- [ ] `test`: tests and nothing else
 - [ ] `chore` / `build` / `ci`: tooling or maintenance
 
 ## Checklist

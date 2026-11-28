@@ -13,14 +13,14 @@ body:
     id: proposal
     attributes:
       label: Proposal
-      description: How you would like it to work.
+      description: How you want it to work.
     validations:
       required: true
   - type: textarea
     id: acceptance-criteria
     attributes:
       label: Acceptance criteria
-      description: Concrete, testable conditions that must be true for this to be done.
+      description: Concrete, testable conditions that this must meet to count as done.
       placeholder: |
         - [ ] Given ..., when ..., then ...
         - [ ] ...
@@ -32,8 +32,8 @@ body:
       label: Open questions
       description: >-
         One checklist item per unknown. Tick each with a link to the comment that answers it, or with
-        "settle in PR". Every box is ticked before the issue is Ready. The PR that settles a question
-        adds the decision record or doc change.
+        "settle in PR". The issue moves to Ready when every box has a tick, and not before. The PR that
+        settles a question adds the decision record or doc change.
       value: "- [ ] "
     validations:
       required: false
@@ -41,6 +41,6 @@ body:
     id: out-of-scope
     attributes:
       label: Out of scope
-      description: What this feature deliberately does not cover.
+      description: What this feature does not cover, by intent.
     validations:
       required: false

@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-Unless a repository says otherwise, only the latest commit on its default branch is supported; fixes are not backported.
+Unless a repository says otherwise, it supports the latest commit on its default branch, and no other commit. Fixes are not backported.
 
 ## Reporting a vulnerability
 
@@ -18,12 +18,12 @@ Unless a repository says otherwise, only the latest commit on its default branch
 - The affected repository, commit, version, URL or component
 - Device, operating system and browser, where relevant
 - Any known mitigations or suggested fixes
-- How you would like to be credited, if at all
+- How you want us to credit you, if at all
 
-### What to expect
+### After you report
 
 - **Acknowledgement within 3 working days** of your report.
 - An initial assessment and, where confirmed, a plan and timeline for a fix.
-- Updates as the fix progresses, and a note when it is released.
+- Updates as the fix progresses, and a note when we release it.
 
-Please give us a reasonable amount of time to fix the issue before disclosing it to anyone else.
+Give us a reasonable amount of time to fix the issue before you disclose it to anyone else.

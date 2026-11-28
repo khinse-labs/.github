@@ -1,5 +1,5 @@
 name: Task
-description: Tooling, dependencies, docs, reviews or operations work that changes no behaviour for users.
+description: Tooling, dependencies, docs, reviews or operations work that does not change behaviour for users.
 type: Task
 body:
   - type: dropdown
