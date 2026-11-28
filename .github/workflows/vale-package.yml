@@ -4,7 +4,7 @@ name: Vale package
 # khinse-labs.zip. Repositories put the asset URL in the Packages key of their .vale.ini. Usage:
 # README.md, section "Shared Vale config".
 #
-# A release made with GITHUB_TOKEN (for example by release.yml) does not start other workflows,
+# A release made with GITHUB_TOKEN (such as one from release.yml) does not start other workflows,
 # this one included. Run it by hand then, with `workflow_dispatch` and the tag.
 
 on:
@@ -23,7 +23,7 @@ jobs:
   # Downloads Vale and the packages that the package names. It runs apart from the upload, with a
   # token that can read but not write.
   test:
-    name: Test the rules
+    name: Check the package
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:
@@ -78,10 +78,10 @@ jobs:
           echo "$RUNNER_TEMP/vale-bin" >>"$GITHUB_PATH"
 
       # Installs the package from its folder into a scratch StylesPath, with the packages it names,
-      # as a repository does. The rules then run their own tests. The sync writes nothing to the
+      # as a repository does. A broken entry fails the sync. The sync writes nothing to the
       # checkout, which the zip packs. The config lists the grammars of the Prose view, as a
       # repository's does: one sync does not install the package's.
-      - name: Test the rules
+      - name: Install the package
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/vale-test"
@@ -89,7 +89,6 @@ jobs:
           printf 'StylesPath = styles\nPackages = %s\nGrammars = yaml, toml, typescript, bash\n' \
             "$GITHUB_WORKSPACE/vale/khinse-labs" >.vale.ini
           vale sync --plain-progress
-          vale test --coverage styles/khinse-labs styles/SE
 
   package:
     name: Build and upload khinse-labs.zip

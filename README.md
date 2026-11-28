@@ -86,7 +86,7 @@ jobs:
 | Input | Default | Meaning |
 | --- | --- | --- |
 | `bump` | `auto` | `auto` picks the bump from the commits. `patch`, `minor` or `major` forces it, and releases even when every unreleased commit is tooling or process. |
-| `include-paths` | empty | Globs, separated by spaces or newlines, passed to git-cliff as `--include-path`. Commits that touch these paths count for the version and the notes, and no others do (for example `apps/app/** packages/**`). Empty counts every commit. |
+| `include-paths` | empty | Globs, separated by spaces or newlines, passed to git-cliff as `--include-path`. Commits that touch these paths count for the version and the notes, and no others do (such as `apps/app/** packages/**`). Empty counts every commit. |
 | `cliff-ref` | `v0.1.0` | Tag of this repository to read `cliff.toml` from. The caller pins the workflow itself by tag. Then a new workflow tag is the one way to change the default. Set it to read another tag. |
 
 | Output | Meaning |
@@ -109,7 +109,7 @@ jobs:
 
 ## Shared Vale config
 
-[`vale/khinse-labs/`](vale/khinse-labs/) is a [Vale package](https://docs.vale.sh/keys/packages) with the prose rules for every repository in the organisation. It contains two styles of its own, `khinse-labs` (the house rules) and `SE` (Simplified English), and the views in `config`. Its [`.vale.ini`](vale/khinse-labs/.vale.ini) names more packages from the [Vale package library](https://vale.sh/explorer), and `vale sync` installs them too:
+[`vale/khinse-labs/`](vale/khinse-labs/) is a [Vale package](https://docs.vale.sh/keys/packages) with the prose config for every repository in the organisation. It has no rules of its own. It holds a [`.vale.ini`](vale/khinse-labs/.vale.ini) that pins packages and sets rule levels, and a `config` folder with a vocabulary and views. The `.vale.ini` names packages from the [Vale package library](https://vale.sh/explorer), and `vale sync` installs them too:
 
 | Package | What it adds |
 | --- | --- |
@@ -121,7 +121,7 @@ jobs:
 | `alex` | Words that are not inclusive |
 | `Commits` | Checks for commit messages, described [below](#commit-messages) |
 
-The `.vale.ini` turns the styles and Vale's own style on for every file. `Prompts` is on for `AGENTS.md`, `CLAUDE.md` and `SKILL.md` files and off for all others. `Commits` is on for commit messages and off for all other files. Every rule that is on gives an error, and the `ai-tells` rules that repeat another style are off. It pins each package to a release and to the SHA-256 of its archive. [`vale-package.yml`](.github/workflows/vale-package.yml) runs the tests of the rules, then packs the folder as `khinse-labs.zip` and attaches it to each release of this repository.
+The `.vale.ini` turns the styles and Vale's own style on for every file. `Prompts` is on for `AGENTS.md`, `CLAUDE.md` and `SKILL.md` files and off for all others. `Commits` is on for commit messages and off for all other files. Every rule that is on gives an error. It pins each package to a release and to the SHA-256 of its archive. [`vale-package.yml`](.github/workflows/vale-package.yml) checks that the packages install, then packs the folder as `khinse-labs.zip` and attaches it to each release of this repository.
 
 `Vale.Spelling` checks the spelling, and a misspelling is an error. The terms that it accepts in every repository are in the vocabulary [`accept.txt`](vale/khinse-labs/styles/config/vocabularies/khinse-labs/accept.txt). It also accepts a word with an underscore inside it, such as `git_url`, because such a word is an identifier.
 
@@ -205,11 +205,11 @@ git log -1 --format=%B | vale --path=COMMIT_EDITMSG
 | A subject in the imperative: "add", not "added" (`Commits.Imperative`) | Vale, error |
 | No placeholder subject, such as `fix: typo` or `chore: update` (`Commits.Placeholder`) | Vale, error |
 | No whitespace at the edges of the subject (`Commits.Whitespace`) | Vale, error |
-| The prose rules of the package, on the subject and the body | Vale, error |
+| The prose rules that the package turns on, on the subject and the body | Vale, error |
 
 Every alert on a message is an error and stops the commit. The prose rules are the rules of `[*]`, with these changes for messages:
 
-- Readability is off, and so is ai-tells, except for `ai-tells.EmDashUsage`, `ai-tells.DoubleHyphen` and `ai-tells.SemicolonUsage`. On the bodies of real commit messages, nearly all their other alerts were false.
+- ai-tells is off, except for `ai-tells.EmDashUsage`, `ai-tells.DoubleHyphen` and `ai-tells.SemicolonUsage`. On the bodies of real commit messages, nearly all its other alerts were false.
 - `Vale.Spelling` is off, because a body names identifiers and tools.
 - `alex.ProfanityUnlikely` is off. It reports "failed" and "failure".
 - All write-good rules are on, also the ones that `[*]` turns off.
@@ -225,12 +225,11 @@ The commit hook of the agent-tools Claude Code plugin uses the same `[COMMIT_EDI
 - **Pin the package to a tag.** A new tag can bring new rules.
 - **`vale-package.yml` runs when someone publishes a release.** A release made with `GITHUB_TOKEN`, such as one from `release.yml`, does not start other workflows. Then run `vale-package.yml` by hand with the tag. The build gives the same bytes for the same tag. A second run then keeps a pinned digest valid.
 - **Keep immutable releases off for this repository.** `vale-package.yml` uploads the zip after the release is out, and GitHub refuses a new asset on an immutable release. To turn them on, attach the zip to the draft before you publish it.
-- **Do not edit the synced styles.** `vale sync` replaces them. Change the rules here and make a new tag.
-- **Each rule of `khinse-labs` and `SE` has tests.** They are under `tests:` in the rule file: one case that gives an alert and one that does not. To run them, sync the package from its folder and run `vale test --coverage` on the two styles, as the `Test the rules` step of `vale-package.yml` does. A new rule needs its two cases.
+- **Do not edit the synced styles.** `vale sync` replaces them. Change the config here and make a new tag.
 - **To update a package from the library, change its tag and its digest together** in the package `.vale.ini`. A new `Prompts` rule also needs a line in the `Prompts` section there. Keep `Commits` first in the list. The comment above `Packages` says why.
 
 ## Licence
 
-The authors dedicate the files in this repository to the public domain under [CC0 1.0](LICENSE). Copy and adapt them freely. The exception is [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md), which adapts the Contributor Covenant and stays under [<!-- vale SE.CapsPhrase = NO -->CC BY<!-- vale SE.CapsPhrase = YES --> 4.0](https://creativecommons.org/licenses/by/4.0/). The Vale package names other packages but does not contain them. `vale sync` downloads each one, with its own licence, from its repository.
+The authors dedicate the files in this repository to the public domain under [CC0 1.0](LICENSE). Copy and adapt them freely. The exception is [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md), which adapts the Contributor Covenant and stays under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The Vale package names other packages but does not contain them. `vale sync` downloads each one, with its own licence, from its repository.
 
 This licence covers this repository alone. It does not apply to other khinse-labs repositories.

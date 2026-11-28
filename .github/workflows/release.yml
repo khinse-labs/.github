@@ -22,7 +22,7 @@ on:
       include-paths:
         description: >-
           Optional. Glob patterns, separated by spaces or newlines, passed to git-cliff as
-          its include-path option. Commits that touch these paths count, and no others do (for example `apps/app/** packages/**`).
+          its include-path option. Commits that touch these paths count, and no others do (such as `apps/app/** packages/**`).
           Empty counts every commit.
         type: string
         default: ""
@@ -37,10 +37,10 @@ on:
         description: "true when the workflow made a release, false when it found nothing to release."
         value: ${{ jobs.release.outputs.released }}
       version:
-        description: The new version without the leading v (for example 1.2.3). Empty when the workflow did not release.
+        description: The new version without the leading v, as in 1.2.3. Empty when the workflow did not release.
         value: ${{ jobs.release.outputs.version }}
       tag:
-        description: The new tag, with the leading v (for example v1.2.3). Empty when the workflow did not release.
+        description: The new tag, with the leading v, as in v1.2.3. Empty when the workflow did not release.
         value: ${{ jobs.release.outputs.tag }}
 
 permissions:
