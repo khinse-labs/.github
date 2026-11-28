@@ -1,4 +1,6 @@
-# Filler phrases. SE.Filler and SE.Words find the single filler words, so they are not here.
+# Filler phrases. SE.Filler, SE.Words and write-good find the single filler words, so they are not
+# here.
+# Modelese.Importance finds "it is important to".
 extends: existence
 message: "Remove the filler '%s'."
 level: warning
@@ -6,7 +8,6 @@ ignorecase: true
 tokens:
   - please note
   - note that
-  - it is important to
   - make sure that
 tests:
   - name: flags a filler phrase

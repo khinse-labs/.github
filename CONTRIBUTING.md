@@ -8,7 +8,7 @@ Most work should start as an issue, to track and discuss it before building it. 
 
 | Form    | Issue type | Use it for                                                                      |
 | ------- | ---------- | ------------------------------------------------------------------------------- |
-| Bug     | Bug        | Something broken or behaving unexpectedly                                       |
+| Bug     | Bug        | Something broken or not behaving as expected                                    |
 | Feature | Feature    | New behaviour for users, with required acceptance criteria                      |
 | Task    | Task       | Tooling, dependencies, docs, reviews and operations, with no user-facing change |
 
@@ -20,7 +20,7 @@ Each product has its own project. The Status field of each issue moves through *
 
 - A Feature lists what is still unknown under **Open questions**, one checklist item each. Business calls, such as the owner of an account, go on the first feature that needs them.
 - Tick a question with a link to the comment that answers it, or with "settle in PR".
-- An issue moves from Backlog to Ready only when every box has a tick.
+- An issue moves from Backlog to Ready when every box has a tick, and not before.
 
 ### Labels
 
@@ -39,14 +39,14 @@ The organisation uses GitHub's default labels: `bug`, `documentation`, `duplicat
 - **Make PRs small** and focused on one concern.
 - **Tests with every feature.** New behaviour comes with tests, and a bug fix comes with a regression test.
 - **Docs in the same PR.** If a change affects behaviour, setup or architecture, update the docs in the same PR.
-- **Decisions belong in the PR.** A decision record or doc change goes in the same PR as the code that needed it. Do not open a doc-only PR for a decision.
+- **Decisions belong in the PR.** A decision record or doc change goes in the same PR as the code that needed it. To record a decision, do not open a PR that changes docs and no code.
 - The repository's checks must pass.
 - Fill in the pull request template, including `Closes #<issue>` if an issue exists.
 
 ### Merging
 
 - PRs are **squash merged**, so the PR title must be a valid Conventional Commit (the App checks the squash message on every PR).
-- **Only maintainers merge.** Nobody pushes directly to `main`. Every change lands through a PR.
+- **Maintainers merge, and nobody else does.** Nobody pushes directly to `main`. Every change lands through a PR.
 - **Agents act for a person.** An AI agent may do anything its person can do, such as open an issue or PR, triage, or merge. Each person answers for what their agents do.
 
 ## Getting help

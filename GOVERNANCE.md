@@ -26,7 +26,7 @@ An ADR, or any doc change that records a decision, goes in the same PR as the co
 ## Contributors and AI agents
 
 - Contributors may open issues and pull requests.
-- Only maintainers merge, using squash merges. Nobody pushes directly to `main`.
+- Maintainers merge, and nobody else does. They use squash merges. Nobody pushes directly to `main`.
 - **An AI agent may do anything its person can do**, such as open an issue or PR, triage, or merge. Each person answers for what their agents do.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for expected behaviour.

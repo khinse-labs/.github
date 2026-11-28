@@ -1,5 +1,5 @@
 name: Bug report
-description: Report something that does not work or behaves unexpectedly.
+description: Report something that does not work or does not behave as expected.
 type: Bug
 body:
   - type: markdown

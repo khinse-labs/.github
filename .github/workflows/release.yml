@@ -8,8 +8,8 @@ name: Release
 # Skips cleanly (`released` = false) when every unreleased commit is tooling or process (cliff.toml
 # group 9: chore, ci, build, style, test) and `bump` is auto. A breaking commit is never in group 9.
 #
-# The workflow releases from the default branch only. A release made with GITHUB_TOKEN does not
-# start other workflows. So a caller that deploys does it in a job of its own. That job has `needs:` for this one
+# The workflow releases from the default branch and from no other branch. A release made with
+# GITHUB_TOKEN does not start other workflows. So a caller that deploys does it in a job of its own. That job has `needs:` for this one
 # and reads `tag`.
 
 on:
@@ -22,14 +22,14 @@ on:
       include-paths:
         description: >-
           Optional. Glob patterns, separated by spaces or newlines, passed to git-cliff as
-          --include-path. Only commits that touch these paths count (for example `apps/app/** packages/**`).
+          its include-path option. Commits that touch these paths count, and no others do (for example `apps/app/** packages/**`).
           Empty counts every commit.
         type: string
         default: ""
       cliff-ref:
         description: >-
           Tag (or other ref) of khinse-labs/.github to read cliff.toml from. Callers pin the workflow
-          itself by tag. The default then changes only with a new workflow tag. See README.md.
+          itself by tag. Then a new workflow tag is the one way to change the default. See README.md.
         type: string
         default: v0.1.0
     outputs:
@@ -56,8 +56,8 @@ jobs:
     concurrency:
       group: release
       cancel-in-progress: false
-    # The caller's job must grant this too. A called workflow can only use the permissions its caller
-    # gives it.
+    # The caller's job must grant this too. A called workflow cannot use a permission that its
+    # caller does not give it.
     permissions:
       contents: write # creates the tag and the release
     outputs:
@@ -65,7 +65,7 @@ jobs:
       version: ${{ steps.release.outputs.version }}
       tag: ${{ steps.release.outputs.tag }}
     steps:
-      # Runs before the checkout, to stop a wrong ref early. Also checks the inputs.
+      # Runs before the checkout, to stop a wrong ref before any other step. Also checks the inputs.
       - name: Check the ref and the inputs
         env:
           BUMP: ${{ inputs.bump }}

@@ -1,8 +1,8 @@
 # Commit rules for every khinse-labs repository, for commit-check (https://commit-check.com).
 # The Commit Check GitHub App applies this file to pull requests in every repository without a config
-# of its own. For the local hooks, a repository adds a .lefthook/cchk.toml that starts with
+# of its own. For the local hooks, a repository adds a .lefthook/cchk.toml. This line starts it:
 #   inherit_from = "github:khinse-labs/.github@v0.1.0:cchk.toml"
-# and overrides only what it needs to (see lefthook/conventions.yml).
+# Then the file sets what it needs to and nothing more. See lefthook/conventions.yml.
 
 [commit]
 # https://www.conventionalcommits.org
@@ -42,7 +42,7 @@ allow_branch_types = ["feat", "fix", "docs", "chore"]
 ignore_authors = ["renovate[bot]", "dependabot[bot]"]
 
 [pull_request]
-# PRs are squash merged. The GitHub App checks only the message that the squash merge will put on
-# main. GitHub builds that message from the repository's merge settings, PR title
+# PRs are squash merged. The GitHub App checks the message that the squash merge will put on
+# main, and no other message. GitHub builds that message from the repository's merge settings, PR title
 # included.
 check = "squash"

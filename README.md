@@ -86,8 +86,8 @@ jobs:
 | Input | Default | Meaning |
 | --- | --- | --- |
 | `bump` | `auto` | `auto` picks the bump from the commits. `patch`, `minor` or `major` forces it, and releases even when every unreleased commit is tooling or process. |
-| `include-paths` | empty | Globs, separated by spaces or newlines, passed to git-cliff as `--include-path`. Only commits that touch these paths count for the version and the notes (for example `apps/app/** packages/**`). Empty counts every commit. |
-| `cliff-ref` | `v0.1.0` | Tag of this repository to read `cliff.toml` from. The caller pins the workflow itself by tag. The default then changes only with a new workflow tag. Set it to read another tag. |
+| `include-paths` | empty | Globs, separated by spaces or newlines, passed to git-cliff as `--include-path`. Commits that touch these paths count for the version and the notes, and no others do (for example `apps/app/** packages/**`). Empty counts every commit. |
+| `cliff-ref` | `v0.1.0` | Tag of this repository to read `cliff.toml` from. The caller pins the workflow itself by tag. Then a new workflow tag is the one way to change the default. Set it to read another tag. |
 
 | Output | Meaning |
 | --- | --- |
@@ -98,10 +98,10 @@ jobs:
 ### Notes
 
 - **Pin the caller to a tag, such as `@v0.1.0`.** Callers pin the shared config to tags of this repository (`cchk.toml`, `lefthook/conventions.yml`, `cliff.toml`), and the workflow follows the same rule. `v0.1.0` is the first tag of this workflow. The maintainers create it right after the workflow merges.
-- **Keep the default of `cliff-ref` on a tag that exists.** If a change to `cliff.toml` alters versions or notes, merge it and make the tag. Then raise the default in a new PR and make a new tag. A change to comments only does not need a new default.
-- **The calling job needs `contents: write`.** A called workflow can only use the permissions its caller gives it. Keep `permissions: contents: read` for the rest of the caller.
+- **Keep the default of `cliff-ref` on a tag that exists.** If a change to `cliff.toml` alters versions or notes, merge it and make the tag. Then raise the default in a new PR and make a new tag. A change that touches comments and nothing else does not need a new default.
+- **The calling job needs `contents: write`.** A called workflow cannot use a permission that its caller does not give it. Keep `permissions: contents: read` for the rest of the caller.
 - **A release made with `GITHUB_TOKEN` does not start other workflows.** Workflows on `release` or on a pushed tag do not run. So deploy in a job of the caller. That job has `needs:` for the release job and reads `tag` (see the example). Do not deploy in a separate workflow on the tag.
-- **Only the default branch can release.** The workflow fails on any other ref before it checks anything out, and on a tag-triggered caller.
+- **The default branch can release, and no other ref can.** The workflow fails on any other ref before it checks anything out, and on a tag-triggered caller.
 - **One release at a time.** The called job has `concurrency: group: release` without cancelling. Do not use the group `release` in the caller: the same group in both deadlocks.
 - **A tag ruleset can block it.** If the repository restricts who creates `v*` tags, `github-actions` needs a bypass, because the workflow creates the tag with `GITHUB_TOKEN`.
 - **One call makes the tag and the release.** A cancelled or timed-out run cannot leave a tag with no release. The tag is lightweight, not annotated.
@@ -113,16 +113,17 @@ jobs:
 
 | Package | What it adds |
 | --- | --- |
-| `write-good` | Passive voice, wordy phrases and repeated words |
+| `write-good` | Passive voice, wordy phrases, weasel words, adverbs, sentences that start with "there is" and repeated words |
 | `Readability` | The Flesch-Kincaid grade of each paragraph of 25 words or more, as a warning above 12 |
-| `TechTerms` | A dictionary of technical terms for `khinse-labs.Spelling` |
 | `Prompts` | Checks for `AGENTS.md`, `CLAUDE.md` and `SKILL.md` files |
 | `Modelese` | Phrases that language models overuse |
-| `ai-tells` | More patterns of generated prose, as warnings |
+| `ai-tells` | More patterns of generated prose, as warnings. A semicolon is an error. |
 | `alex` | Words that are not inclusive |
 | `Commits` | Checks for commit messages, described [below](#commit-messages) |
 
-The `.vale.ini` turns the styles and Vale's own style on for every file. `Prompts` is on only for `AGENTS.md`, `CLAUDE.md` and `SKILL.md` files, `Commits` only for commit messages, and `TechTerms` only adds a spelling dictionary. The `.vale.ini` also sets the rule levels, and it turns off the `ai-tells` rules that repeat a rule of `khinse-labs` or `SE`. It pins each package to a release and to the SHA-256 of its archive. [`vale-package.yml`](.github/workflows/vale-package.yml) runs the tests of the rules, then packs the folder as `khinse-labs.zip` and attaches it to each release of this repository.
+The `.vale.ini` turns the styles and Vale's own style on for every file. `Prompts` is on for `AGENTS.md`, `CLAUDE.md` and `SKILL.md` files and off for all others. `Commits` is on for commit messages and off for all other files. The `.vale.ini` also sets the rule levels, and it turns off the `ai-tells` rules that repeat a rule of another style. It pins each package to a release and to the SHA-256 of its archive. [`vale-package.yml`](.github/workflows/vale-package.yml) runs the tests of the rules, then packs the folder as `khinse-labs.zip` and attaches it to each release of this repository.
+
+`Vale.Spelling` checks the spelling, and a misspelling gives a warning. The terms that it accepts in every repository are in the vocabulary [`accept.txt`](vale/khinse-labs/styles/config/vocabularies/khinse-labs/accept.txt). It also accepts a word with an underscore inside it, such as `git_url`, because such a word is an identifier.
 
 Vale lints the prose of more than Markdown:
 
@@ -139,13 +140,13 @@ Packages = https://github.com/khinse-labs/.github/releases/download/<tag>/khinse
 Grammars = yaml, toml, typescript, bash
 ```
 
-The package names the same grammars, but the first `vale sync` installs only the grammars in the repository's file. Without them, Vale finds comments by their delimiter (`#`, `//`), even inside a string. Vale installs only the grammars in the list, so add the grammar of any other language the repository lints, such as `python`.
+The package names the same grammars, but the first `vale sync` installs the grammars in the repository's file and no others. Without them, Vale finds comments by their delimiter (`#`, `//`), even inside a string. Vale does not install a grammar that is not in the list. So add the grammar of any other language the repository lints, such as `python`.
 
 `vale sync` downloads the package and the packages it names, so it needs network access. It copies the styles into `.vale/styles` and the package config into `.vale/styles/.vale-config/`. After the sync, `vale` runs offline. Vale reads the package config first and the repository's file last. In the repository's file, `BasedOnStyles` adds styles to the list of the package. Any other key, such as a rule level, replaces the value of the package.
 
-To pin the exact archive, add its SHA-256 digest to the URL: `khinse-labs.zip#sha256:<digest>`. The summary of the `vale-package.yml` run shows the digest, and `vale sync --plain-progress` prints it. Only Vale 3.29.0 or later checks the digest, of this package and of the packages it names. An older Vale ignores it.
+To pin the exact archive, add its SHA-256 digest to the URL: `khinse-labs.zip#sha256:<digest>`. The summary of the `vale-package.yml` run shows the digest, and `vale sync --plain-progress` prints it. Vale 3.29.0 or later checks the digest, of this package and of the packages it names. An older Vale ignores it.
 
-Git-ignore what `vale sync` writes. If the repository has no styles of its own, ignore `.vale/styles/`. Otherwise keep only your own files:
+Git-ignore what `vale sync` writes. If the repository has no styles of its own, ignore `.vale/styles/`. Otherwise ignore everything except your own files:
 
 ```gitignore
 .vale/styles/*
@@ -165,12 +166,12 @@ Vocab = Repo
 
 [*]
 BasedOnStyles = Local
-SE.Semicolon = warning
+ai-tells.SemicolonUsage = warning
 write-good.Passive = NO
 ```
 
 - `Local` is a style of the repository, in `.vale/styles/Local/`. The package does not use a style of that name, so `vale sync` leaves it alone.
-- `Vocab = Repo` reads terms from `.vale/styles/config/vocabularies/Repo/accept.txt`. `khinse-labs.Spelling` accepts them too. Add a term for every repository to [`spelling-accept.txt`](vale/khinse-labs/styles/khinse-labs/spelling-accept.txt) instead.
+- `Vocab = Repo` reads terms from `.vale/styles/config/vocabularies/Repo/accept.txt`. `Vale.Spelling` accepts them too. Add a term for every repository to the vocabulary [`accept.txt`](vale/khinse-labs/styles/config/vocabularies/khinse-labs/accept.txt) of the package instead.
 - A rule level in `[*]` replaces the level of the package. `NO` turns the rule off.
 - To lint the prose in `.mts` files, add `[*.mts]` sections with `View = Mts` or `View = Comments`. These views need the TypeScript grammar, which the `Grammars` line above installs. The comment in the package [`.vale.ini`](vale/khinse-labs/.vale.ini) has an example.
 - To read YAML or TOML files through another view, use the glob of the package: `[*.{yml,yaml}]` or `[*.toml]`. If two sections match a file, Vale picks one of them at random.
@@ -208,11 +209,10 @@ git log -1 --format=%B | vale --path=COMMIT_EDITMSG
 
 Every alert on a message is an error and stops the commit. The prose rules are the rules of `[*]`, with these changes for messages:
 
-- Readability and ai-tells are off. On the bodies of real commit messages, nearly all their alerts were false.
-- `khinse-labs.Spelling` is off, because a body names identifiers and tools.
-- `write-good.Passive` is off, because `SE.Passive` finds the same verbs.
+- Readability is off, and so is ai-tells, except for `ai-tells.EmDashUsage`, `ai-tells.DoubleHyphen` and `ai-tells.SemicolonUsage`. On the bodies of real commit messages, nearly all their other alerts were false.
+- `Vale.Spelling` is off, because a body names identifiers and tools.
 - `alex.ProfanityUnlikely` is off. It reports "failed" and "failure".
-- All write-good rules are on, also the ones that `[*]` turns off. `write-good.Weasel` replaces `khinse-labs.Weasel`.
+- All write-good rules are on, also the ones that `[*]` turns off.
 - Every rule gives an error for messages, also the rules that give warnings in other files.
 
 The section of the package sets its own rule levels, so a level in the `[*]` section of a repository does not reach commit messages. To change a level for messages, set it in a `[COMMIT_EDITMSG]` section of the repository's `.vale.ini`.
@@ -232,6 +232,6 @@ The commit hook of the agent-tools Claude Code plugin uses the same `[COMMIT_EDI
 
 ## Licence
 
-The authors dedicate the files in this repository to the public domain under [CC0 1.0](LICENSE). Copy and adapt them freely. The exception is [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md), which adapts the Contributor Covenant and stays under [<!-- vale SE.CapsPhrase = NO -->CC BY<!-- vale SE.CapsPhrase = YES --> 4.0](https://creativecommons.org/licenses/by/4.0/). The Vale package names other packages but does not contain them. `vale sync` downloads each one, with its own licence, from its repository. The word list of `khinse-labs.Weasel` comes from write-good and keeps its MIT licence, which is in the header of [`Weasel.yml`](vale/khinse-labs/styles/khinse-labs/Weasel.yml).
+The authors dedicate the files in this repository to the public domain under [CC0 1.0](LICENSE). Copy and adapt them freely. The exception is [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md), which adapts the Contributor Covenant and stays under [<!-- vale SE.CapsPhrase = NO -->CC BY<!-- vale SE.CapsPhrase = YES --> 4.0](https://creativecommons.org/licenses/by/4.0/). The Vale package names other packages but does not contain them. `vale sync` downloads each one, with its own licence, from its repository.
 
-This licence covers this repository only. It does not apply to other khinse-labs repositories.
+This licence covers this repository alone. It does not apply to other khinse-labs repositories.

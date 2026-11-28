@@ -1,24 +1,17 @@
-# Simplified English: Finds filler words that add no meaning.
+# Simplified English: Finds filler words that add no meaning. write-good.Adverbs and
+# write-good.Weasel find the others, such as "just" and "very", so they are not here.
 extends: existence
 message: "Remove the filler '%s'."
 level: warning
 ignorecase: true
 tokens:
-  - very
-  - quite
-  - simply
-  - just
-  - easily
-  - basically
-  - really
   - actually
-  - obviously
   - please
 tests:
   - name: flags a filler word
-    input: Just run the tests.
+    input: Please run the tests.
     want: |
-      1:1:SE.Filler:Remove the filler 'Just'.
+      1:1:SE.Filler:Remove the filler 'Please'.
   - name: leaves the plain sentence alone
     input: Run the tests.
     want: ''

@@ -5,7 +5,7 @@ name: Vale package
 # README.md, section "Shared Vale config".
 #
 # A release made with GITHUB_TOKEN (for example by release.yml) does not start other workflows,
-# this one included. Run it by hand then, with workflow_dispatch and the tag.
+# this one included. Run it by hand then, with `workflow_dispatch` and the tag.
 
 on:
   release:
@@ -21,7 +21,7 @@ permissions: {}
 
 jobs:
   # Downloads Vale and the packages that the package names. It runs apart from the upload, with a
-  # token that can only read.
+  # token that can read but not write.
   test:
     name: Test the rules
     runs-on: ubuntu-24.04
@@ -37,7 +37,7 @@ jobs:
 
       # Vale 3.28.1 ignores the #sha256: of a Packages entry, so this step checks each one itself.
       # It reads the entries from the package .vale.ini, the one place that lists them. Every
-      # entry must be an https URL with a digest. `vale sync` downloads them again in the next step.
+      # entry must be a URL over HTTPS, with a digest. `vale sync` downloads them again in the next step.
       - name: Check the package digests
         run: |
           set -euo pipefail
@@ -78,9 +78,9 @@ jobs:
           echo "$RUNNER_TEMP/vale-bin" >>"$GITHUB_PATH"
 
       # Installs the package from its folder into a scratch StylesPath, with the packages it names,
-      # as a repository does. The rules then run their own tests, which need the TechTerms
-      # dictionary. The sync writes nothing to the checkout, which the zip packs. The ini lists the
-      # grammars of the Prose view, as a repository's does: one sync does not install the package's.
+      # as a repository does. The rules then run their own tests. The sync writes nothing to the
+      # checkout, which the zip packs. The config lists the grammars of the Prose view, as a
+      # repository's does: one sync does not install the package's.
       - name: Test the rules
         run: |
           set -euo pipefail
@@ -106,7 +106,8 @@ jobs:
 
       # The zip has one top-level folder, khinse-labs/, named like the file, as Vale requires. Fixed
       # dates and a sorted file list make a rebuild of one tag give the same bytes. A repository can
-      # pin the digest of the archive, and --clobber then replaces it with an equal file.
+      # pin the digest of the archive, and the clobber option of the upload then replaces it with an
+      # equal file.
       - name: Build the package
         working-directory: vale
         run: |

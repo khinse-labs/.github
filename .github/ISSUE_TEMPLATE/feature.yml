@@ -32,7 +32,7 @@ body:
       label: Open questions
       description: >-
         One checklist item per unknown. Tick each with a link to the comment that answers it, or with
-        "settle in PR". The issue moves to Ready only when every box has a tick. The PR that
+        "settle in PR". The issue moves to Ready when every box has a tick, and not before. The PR that
         settles a question
         adds the decision record or doc change.
       value: "- [ ] "
@@ -42,6 +42,6 @@ body:
     id: out-of-scope
     attributes:
       label: Out of scope
-      description: What this feature deliberately does not cover.
+      description: What this feature does not cover, by intent.
     validations:
       required: false

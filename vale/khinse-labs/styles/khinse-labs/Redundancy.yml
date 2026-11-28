@@ -1,17 +1,16 @@
-# Finds a phrase that says one thing twice. Own short list.
+# Finds a phrase that says one thing twice. Own short list. write-good.TooWordy finds more, such
+# as "close proximity" and "each and every", so they are not here.
 extends: existence
 message: "'%s' says one thing twice. Use the shorter form."
 level: warning
 ignorecase: true
 tokens:
   - ask the question directly
-  - close proximity
   - future plans
   - end result
   - final outcome
   - basic fundamentals
   - completely finished
-  - each and every
   - past history
   - revert back
   - unexpected surprise

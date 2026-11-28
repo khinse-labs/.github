@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-Unless a repository says otherwise, it supports only the latest commit on its default branch. Fixes are not backported.
+Unless a repository says otherwise, it supports the latest commit on its default branch, and no other commit. Fixes are not backported.
 
 ## Reporting a vulnerability
 

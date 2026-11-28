@@ -32,11 +32,11 @@ community include:
 
 - Demonstrating empathy and kindness toward other people
 - Being respectful of differing opinions, viewpoints, and experiences
-- Giving and gracefully accepting constructive feedback
+- Giving constructive feedback, and accepting it with grace
 - Accepting responsibility and apologizing to those affected by our mistakes,
   and learning from the experience
-- Focusing on what is best for the whole community, and not only for us as
-  individuals
+- Focusing on what is best for the whole community, and not for us as
+  individuals alone
 
 Examples of unacceptable behavior include:
 
@@ -88,8 +88,8 @@ To make a report, either:
 - Open a minimal issue that asks a maintainer to contact you privately. Do not
   include any details of the incident.
 
-Community leaders will review and investigate all complaints promptly and with
-fairness.
+Community leaders will review and investigate all complaints without delay and
+with fairness.
 
 Community leaders must respect the privacy and security of the
 reporter of any incident.
