@@ -204,15 +204,16 @@ git log -1 --format=%B | vale --path=COMMIT_EDITMSG
 | A subject in the imperative: "add", not "added" (`Commits.Imperative`) | Vale, error |
 | No placeholder subject, such as `fix: typo` or `chore: update` (`Commits.Placeholder`) | Vale, error |
 | No whitespace at the edges of the subject (`Commits.Whitespace`) | Vale, error |
-| The prose rules of the package, on the subject and the body | Vale, warning |
+| The prose rules of the package, on the subject and the body | Vale, error |
 
-An error stops the commit, and a warning does not. The prose rules are the rules of `[*]`, with these changes for messages:
+Every alert on a message is an error and stops the commit. The prose rules are the rules of `[*]`, with these changes for messages:
 
 - Readability and ai-tells are off. On the bodies of real commit messages, nearly all their alerts were false.
 - `khinse-labs.Spelling` is off, because a body names identifiers and tools.
 - `write-good.Passive` is off, because `SE.Passive` finds the same verbs.
 - `alex.ProfanityUnlikely` is off. It reports "failed" and "failure".
-- The `SE` rules give warnings for messages, also the rules that give errors in other files.
+- All write-good rules are on, also the ones that `[*]` turns off. `write-good.Weasel` replaces `khinse-labs.Weasel`.
+- Every rule gives an error for messages, also the rules that give warnings in other files.
 
 The section of the package sets its own rule levels, so a level in the `[*]` section of a repository does not reach commit messages. To change a level for messages, set it in a `[COMMIT_EDITMSG]` section of the repository's `.vale.ini`.
 
