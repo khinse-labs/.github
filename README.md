@@ -48,6 +48,8 @@ remotes:
       - lefthook/conventions.yml
 ```
 
+The Vale `commit-msg` job and the `comment-ratio` job came after `v1.3.0`. To get them, pin a tag cut after that change.
+
 The repository's `.lefthook/cchk.toml` starts with `inherit_from = "github:khinse-labs/.github@v0.1.0:cchk.toml"`. Run `lefthook install` in each clone.
 
 The `comment-ratio` job of the pre-commit hook counts the lines of each staged file with [cloc](https://github.com/AlDanial/cloc), which mise fetches on first use. A file with 5 or more lines of code fails when its comment lines are more than half its code lines. Move the long explanation to the docs, and keep the comments that the code cannot show.
@@ -234,7 +236,7 @@ Every alert on a message is an error and stops the commit. The prose rules are t
 
 - 17 ai-tells rules are off. On past commit messages, all or nearly all their alerts were false. `ai-tells.ColonUsage` would stop every commit with a `Co-Authored-By:` trailer, and `ai-tells.ConsequenceClause` flags ", so", which a body needs to give a reason. The `[COMMIT_EDITMSG]` section of the package `.vale.ini` lists the rest.
 - `Vale.Spelling` and the vocabulary case check are off, because a message names identifiers, tools and package names.
-- All write-good rules are on, also the ones that `[*]` turns off.
+- All write-good rules are on, except E-Prime, which `[*]` also turns off. E-Prime would flag every "is" and "was".
 
 The section of the package sets its own rule levels, so a level in the `[*]` section of a repository does not reach commit messages. To change a level for messages, set it in a `[COMMIT_EDITMSG]` section of the repository's `.vale.ini`.
 

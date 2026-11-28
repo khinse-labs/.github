@@ -26,7 +26,12 @@ pre-commit:
     # where "#" starts a comment.
     - name: comment-ratio
       run: |
-        mise x cloc@2.12 -- cloc --quiet --by-file --csv --hide-rate --force-lang=TOML,ini {staged_files} |
+        # A pipe hides the status of cloc in sh, so the output goes to a variable first. A file
+        # that cloc does not count gives no output, and the check passes.
+        rows=$(mise x cloc@2.12 -- cloc --quiet --by-file --csv --hide-rate --force-lang=TOML,ini {staged_files}) || {
+          echo "comment-ratio: cloc failed, so the comment ratio is unchecked" >&2; exit 1
+        }
+        printf '%s\n' "$rows" |
           awk -F, 'NR > 1 && $1 != "SUM" && $5 >= 5 && $4 * 2 > $5 {
             printf "%s: %d comment lines for %d code lines, more than half\n", $2, $4, $5; bad = 1
           } END { exit bad }'

@@ -6,8 +6,15 @@ name: Vale package
 #
 # A release made with GITHUB_TOKEN (such as one from release.yml) does not start other workflows,
 # this one included. In that case, run it by hand, with `workflow_dispatch` and the tag.
+#
+# On a pull request, the check job runs on the merge commit. The package job needs a tag and does not run.
 
 on:
+  pull_request:
+    paths:
+      - vale/**
+      - .github/workflows/vale-package.yml
+      - README.md
   release:
     types: [published]
   workflow_dispatch:
@@ -29,10 +36,11 @@ jobs:
     permissions:
       contents: read
     steps:
-      # refs/tags/ makes the checkout fail for a branch name or a SHA.
+      # refs/tags/ makes the checkout fail for a branch name or a SHA. A pull request has no tag. With
+      # an empty ref, the checkout takes its merge commit.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: refs/tags/${{ inputs.tag || github.event.release.tag_name }}
+          ref: ${{ github.event_name != 'pull_request' && format('refs/tags/{0}', inputs.tag || github.event.release.tag_name) || '' }}
           persist-credentials: false
 
       # Vale 3.28.1 ignores the #sha256: of a Packages entry, so this step checks each one itself.
@@ -90,8 +98,14 @@ jobs:
             "$GITHUB_WORKSPACE/vale/khinse-labs" >.vale.ini
           vale sync --plain-progress
 
+      # Lints a file with the synced package, so a bad rule name or level, or a broken view, fails.
+      - name: Lint a file with the package
+        working-directory: ${{ runner.temp }}/vale-test
+        run: vale --config .vale.ini "$GITHUB_WORKSPACE/README.md"
+
   package:
     name: Build and upload khinse-labs.zip
+    if: github.event_name != 'pull_request'
     needs: test
     runs-on: ubuntu-24.04
     timeout-minutes: 5
