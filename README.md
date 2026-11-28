@@ -135,10 +135,10 @@ A repository adds the package to the `.vale.ini` at its root:
 ```ini
 StylesPath = .vale/styles
 Packages = https://github.com/khinse-labs/.github/releases/download/<tag>/khinse-labs.zip
-Grammars = yaml, toml
+Grammars = yaml, toml, typescript, bash
 ```
 
-The package names the same grammars, but the first `vale sync` installs only the grammars in the repository's file. Without them, Vale finds the comments of YAML and TOML files by their `#`, even inside a string.
+The package names the same grammars, but the first `vale sync` installs only the grammars in the repository's file. Without them, Vale finds comments by their delimiter (`#`, `//`), even inside a string. Vale installs only the grammars in the list, so add the grammar of any other language the repository lints, such as `python`.
 
 `vale sync` downloads the package and the packages it names, so it needs network access. It copies the styles into `.vale/styles` and the package config into `.vale/styles/.vale-config/`. After the sync, `vale` runs offline. Vale reads the package config first and the repository's file last. In the repository's file, `BasedOnStyles` adds styles to the list of the package. Any other key, such as a rule level, replaces the value of the package.
 
@@ -159,7 +159,7 @@ A repository adds its own rules and terms after the package, in the same file:
 ```ini
 StylesPath = .vale/styles
 Packages = https://github.com/khinse-labs/.github/releases/download/<tag>/khinse-labs.zip
-Grammars = yaml, toml
+Grammars = yaml, toml, typescript, bash
 Vocab = Repo
 
 [*]
@@ -171,7 +171,7 @@ write-good.Passive = NO
 - `Local` is a style of the repository, in `.vale/styles/Local/`. The package does not use a style of that name, so `vale sync` leaves it alone.
 - `Vocab = Repo` reads terms from `.vale/styles/config/vocabularies/Repo/accept.txt`. `khinse-labs.Spelling` accepts them too. Add a term for every repository to [`spelling-accept.txt`](vale/khinse-labs/styles/khinse-labs/spelling-accept.txt) instead.
 - A rule level in `[*]` replaces the level of the package. `NO` turns the rule off.
-- To lint the prose in `.mts` files, add `Grammars = typescript` and `[*.mts]` sections with `View = Mts` or `View = Comments`. A glob for `.mts` files does not make `vale sync` install the TypeScript grammar, so name it. The comment in the package [`.vale.ini`](vale/khinse-labs/.vale.ini) has an example. Keep `yaml, toml` in that line too (`Grammars = yaml, toml, typescript`), so that the first sync installs them.
+- To lint the prose in `.mts` files, add `[*.mts]` sections with `View = Mts` or `View = Comments`. These views need the TypeScript grammar, which the `Grammars` line above installs. The comment in the package [`.vale.ini`](vale/khinse-labs/.vale.ini) has an example.
 - To read YAML or TOML files through another view, use the glob of the package: `[*.{yml,yaml}]` or `[*.toml]`. If two sections match a file, Vale picks one of them at random.
 - `vale .` skips the `StylesPath`. A Vale rule file outside it goes through the `Prose` view. Vale then lints the `message`, the `description` and the test names of the rule. It does not lint the tokens or the test inputs.
 
