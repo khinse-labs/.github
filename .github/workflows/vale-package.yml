@@ -1,11 +1,11 @@
 name: Vale package
 
-# Builds the khinse-labs Vale package from vale/khinse-labs and attaches it to a release as
-# khinse-labs.zip. Repositories put the asset URL in the Packages key of their .vale.ini. Usage:
-# README.md, section "Shared Vale config".
+# Builds the khinse-labs Vale package and attaches it to a release as khinse-labs.zip. The source
+# is the folder vale/khinse-labs. A repository puts the URL of the asset in the Packages key of its
+# own .vale.ini. Usage: README.md, section "Shared Vale config".
 #
 # A release made with GITHUB_TOKEN (such as one from release.yml) does not start other workflows,
-# this one included. Run it by hand then, with `workflow_dispatch` and the tag.
+# this one included. In that case, run it by hand, with `workflow_dispatch` and the tag.
 
 on:
   release:

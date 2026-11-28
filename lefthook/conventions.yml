@@ -1,19 +1,20 @@
-# Commit, branch, author, tag, file and push conventions for khinse-labs repositories. The hooks
-# run commit-check (https://commit-check.com) against the repository's .lefthook/cchk.toml, which
-# inherits ours with `inherit_from = "github:khinse-labs/.github@v0.1.0:cchk.toml"` at its start.
+# Commit, branch, author, tag, file and push rules for khinse-labs repositories. The hooks run
+# commit-check (https://commit-check.com) with the config in .lefthook/cchk.toml of the repository.
+# That file starts with a line that inherits ours:
+# `inherit_from = "github:khinse-labs/.github@v0.1.0:cchk.toml"`.
 #
-# That file is not at a path the Commit Check GitHub App reads (cchk.toml, commit-check.toml, or
+# .lefthook/cchk.toml is not at a path the Commit Check GitHub App reads (cchk.toml, commit-check.toml, or
 # either under .github/). With a repository config that inherits, the App stopped reporting on pull
 # requests (seen 2026-10-09 and 2026-10-10). Without one, it checks them against our cchk.toml.
 #
 # The commit-msg hook also runs Vale with the [COMMIT_EDITMSG] section of the khinse-labs Vale
-# package (README.md, section "Shared Vale config"). commit-check checks the form of the message, and
-# Vale checks the wording of the subject and the prose of the body. Like commit-check, the job lets
+# package (README.md, section "Shared Vale config"). commit-check checks the form of the message.
+# Vale checks the words of the subject and the prose of the body. Like commit-check, the job lets
 # merge, revert, fixup and squash commits through.
 #
-# When no files changed (an empty commit, or a push of commits that do not change files), lefthook
-# skips the pre-commit and pre-push jobs. The Commit Check GitHub App still checks branch names and
-# authors on pull requests.
+# When no files changed, lefthook skips the jobs of the pre-commit and pre-push hooks. An empty
+# commit is such a case, and so is a push of commits that do not change files. The Commit Check
+# GitHub App still checks the branch names and the authors on pull requests.
 #
 # Needs uv (https://docs.astral.sh/uv/) and lefthook, installed as CONTRIBUTING.md describes. Then
 # run `lefthook install` in the repository. Use this file from the repository's lefthook.yml:

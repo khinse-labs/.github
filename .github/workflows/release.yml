@@ -8,9 +8,9 @@ name: Release
 # Skips cleanly (`released` = false) when every unreleased commit is tooling or process (cliff.toml
 # group 9: chore, ci, build, style, test) and `bump` is auto. A breaking commit is never in group 9.
 #
-# The workflow releases from the default branch and from no other branch. A release made with
-# GITHUB_TOKEN does not start other workflows. So a caller that deploys does it in a job of its own. That job has `needs:` for this one
-# and reads `tag`.
+# The workflow releases from the default branch and from no other branch. Because a release made
+# with GITHUB_TOKEN does not start other workflows, a caller that deploys does it in a job of its
+# own. That job has `needs:` for this one and reads `tag`.
 
 on:
   workflow_call:

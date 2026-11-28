@@ -1,6 +1,7 @@
-# Release notes and the next version for khinse-labs repositories: https://git-cliff.org
-# Read by the reusable release workflow (.github/workflows/release.yml) from the tag its `cliff-ref` input names.
-# Change the commit types here and in cchk.toml together.
+# Release notes and the next version for khinse-labs repositories, made with git-cliff
+# (https://git-cliff.org). The reusable release workflow reads this file. It takes the file from
+# the tag that its cliff-ref input names. The workflow is .github/workflows/release.yml. Keep the
+# commit types the same here and in cchk.toml.
 
 [changelog]
 # One release's notes, for its GitHub release. The release title shows the version.
