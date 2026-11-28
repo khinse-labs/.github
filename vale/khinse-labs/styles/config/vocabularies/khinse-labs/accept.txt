@@ -1,4 +1,3 @@
-(?i)hooks?
 (?i)testcontainers
 (?i)jscpd
 (?i)tsc

@@ -118,7 +118,6 @@ jobs:
 | `Prompts` | Checks for instruction files for agents |
 | `Modelese` | Phrases that language models overuse |
 | `ai-tells` | More patterns of generated prose |
-| `alex` | Words that are not inclusive |
 | `Commits` | Checks for commit messages, described [below](#commit-messages) |
 
 The `.vale.ini` turns the styles and Vale's own style on for every file. `Prompts` checks the instruction files for agents and no other file. These are `AGENTS.md`, `CLAUDE.md` and `SKILL.md` files, and the Markdown files under `.claude/agents/`, `.claude/commands/` and `.claude/rules/`. `Commits` is on for commit messages and off for all other files. Every rule that is on gives an error. It pins each package to a release and to the SHA-256 of its archive. [`vale-package.yml`](.github/workflows/vale-package.yml) checks that the packages install, then packs the folder as `khinse-labs.zip` and attaches it to each release of this repository.
@@ -217,7 +216,6 @@ Every alert on a message is an error and stops the commit. The prose rules are t
 
 - 17 ai-tells rules are off. On past commit messages, all or nearly all their alerts were false. `ai-tells.ColonUsage` would stop every commit with a `Co-Authored-By:` trailer, and `ai-tells.ConsequenceClause` flags ", so", which a body needs to give a reason. The comment in the package `.vale.ini` lists the rest.
 - `Vale.Spelling` and the vocabulary case check are off, because a message names identifiers, tools and package names.
-- `alex.ProfanityUnlikely` is off. It reports "failed" and "failure".
 - All write-good rules are on, also the ones that `[*]` turns off.
 
 The section of the package sets its own rule levels, so a level in the `[*]` section of a repository does not reach commit messages. To change a level for messages, set it in a `[COMMIT_EDITMSG]` section of the repository's `.vale.ini`.
