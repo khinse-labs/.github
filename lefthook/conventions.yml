@@ -6,6 +6,11 @@
 # either under .github/). With a repository config that inherits, the App stopped reporting on pull
 # requests (seen 2026-10-09 and 2026-10-10). Without one, it checks them against our cchk.toml.
 #
+# The commit-msg hook also runs Vale with the [COMMIT_EDITMSG] section of the khinse-labs Vale
+# package (README.md, section "Shared Vale config"). commit-check checks the form of the message, and
+# Vale checks the wording of the subject and the prose of the body. Like commit-check, the job lets
+# merge, revert, fixup and squash commits through.
+#
 # When no files changed (an empty commit, or a push of commits that do not change files), lefthook
 # skips the pre-commit and pre-push jobs. The Commit Check GitHub App still checks branch names and
 # authors on pull requests.
@@ -23,6 +28,14 @@ commit-msg:
   jobs:
     - name: commit-check
       run: uvx --quiet commit-check@2.18.3 --no-banner --config .lefthook/cchk.toml --message {1}
+    # Without a .vale.ini the repository does not use Vale. With one, a missing vale fails, as uv does.
+    - name: vale
+      run: |
+        [ -f .vale.ini ] || exit 0
+        case "$(head -n 1 {1})" in
+          "Merge "* | "Revert "* | "Reapply "* | "fixup! "* | "squash! "* | "amend! "*) exit 0 ;;
+        esac
+        vale --path=COMMIT_EDITMSG < {1}
 
 pre-commit:
   jobs:

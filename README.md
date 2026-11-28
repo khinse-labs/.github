@@ -120,8 +120,9 @@ jobs:
 | `Modelese` | Phrases that language models overuse |
 | `ai-tells` | More patterns of generated prose, as warnings |
 | `alex` | Words that are not inclusive |
+| `Commits` | Checks for commit messages, described [below](#commit-messages) |
 
-The `.vale.ini` turns the styles and Vale's own style on for every file. `Prompts` is on only for `AGENTS.md`, `CLAUDE.md` and `SKILL.md` files, and `TechTerms` only adds a spelling dictionary. The `.vale.ini` also sets the rule levels, and it turns off the `ai-tells` rules that repeat a rule of `khinse-labs` or `SE`. It pins each package to a release and to the SHA-256 of its archive. [`vale-package.yml`](.github/workflows/vale-package.yml) runs the tests of the rules, then packs the folder as `khinse-labs.zip` and attaches it to each release of this repository.
+The `.vale.ini` turns the styles and Vale's own style on for every file. `Prompts` is on only for `AGENTS.md`, `CLAUDE.md` and `SKILL.md` files, `Commits` only for commit messages, and `TechTerms` only adds a spelling dictionary. The `.vale.ini` also sets the rule levels, and it turns off the `ai-tells` rules that repeat a rule of `khinse-labs` or `SE`. It pins each package to a release and to the SHA-256 of its archive. [`vale-package.yml`](.github/workflows/vale-package.yml) runs the tests of the rules, then packs the folder as `khinse-labs.zip` and attaches it to each release of this repository.
 
 Vale lints the prose of more than Markdown:
 
@@ -186,6 +187,39 @@ vale <paths>
 
 Run `vale sync` again after you change the `Packages` line. Repositories run Vale in their pre-commit hook or their task runner.
 
+### Commit messages
+
+The `[COMMIT_EDITMSG]` section of the package checks commit messages, together with commit-check. Vale reads the message from stdin, and `--path=COMMIT_EDITMSG` picks the section:
+
+```sh
+git log -1 --format=%B | vale --path=COMMIT_EDITMSG
+```
+
+| Check | Tool |
+| --- | --- |
+| The type, the subject length (5 to 72 characters) and its lower-case start | commit-check |
+| Merge, revert and fixup commits pass, WIP and empty commits fail | commit-check |
+| Branch names, authors, tag names, files and force pushes | commit-check |
+| A blank line after the subject (`Commits.Blank`) | Vale, error |
+| A subject in the imperative: "add", not "added" (`Commits.Imperative`) | Vale, error |
+| No placeholder subject, such as `fix: typo` or `chore: update` (`Commits.Placeholder`) | Vale, error |
+| No whitespace at the edges of the subject (`Commits.Whitespace`) | Vale, error |
+| The prose rules of the package, on the subject and the body | Vale, warning |
+
+An error stops the commit, and a warning does not. The prose rules are the rules of `[*]`, with these changes for messages:
+
+- Readability and ai-tells are off. On the bodies of real commit messages, nearly all their alerts were false.
+- `khinse-labs.Spelling` is off, because a body names identifiers and tools.
+- `write-good.Passive` is off, because `SE.Passive` finds the same verbs.
+- `alex.ProfanityUnlikely` is off. It reports "failed" and "failure".
+- The `SE` rules give warnings for messages, also the rules that give errors in other files.
+
+The section of the package sets its own rule levels, so a level in the `[*]` section of a repository does not reach commit messages. To change a level for messages, set it in a `[COMMIT_EDITMSG]` section of the repository's `.vale.ini`.
+
+[`lefthook/conventions.yml`](lefthook/conventions.yml) runs Vale in the commit-msg hook, after commit-check. Like commit-check, the job lets merge, revert, fixup and squash commits through. In a repository without a `.vale.ini`, the job does nothing. In a repository with one, the job needs Vale and a `vale sync`, and it fails without them. It also needs a package tag that has the `[COMMIT_EDITMSG]` section. With an older package, `[*]` checks the message as plain text, and its errors stop the commit.
+
+The commit hook of the agent-tools Claude Code plugin uses the same `[COMMIT_EDITMSG]` section.
+
 ### Notes
 
 - **Pin the package to a tag.** A new tag can bring new rules.
@@ -193,7 +227,7 @@ Run `vale sync` again after you change the `Packages` line. Repositories run Val
 - **Keep immutable releases off for this repository.** `vale-package.yml` uploads the zip after the release is out, and GitHub refuses a new asset on an immutable release. To turn them on, attach the zip to the draft before you publish it.
 - **Do not edit the synced styles.** `vale sync` replaces them. Change the rules here and make a new tag.
 - **Each rule of `khinse-labs` and `SE` has tests.** They are under `tests:` in the rule file: one case that gives an alert and one that does not. To run them, sync the package from its folder and run `vale test --coverage` on the two styles, as the `Test the rules` step of `vale-package.yml` does. A new rule needs its two cases.
-- **To update a package from the library, change its tag and its digest together** in the package `.vale.ini`. A new `Prompts` rule also needs a line in the `Prompts` section there.
+- **To update a package from the library, change its tag and its digest together** in the package `.vale.ini`. A new `Prompts` rule also needs a line in the `Prompts` section there. Keep `Commits` first in the list. The comment above `Packages` says why.
 
 ## Licence
 
