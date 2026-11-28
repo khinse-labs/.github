@@ -21,8 +21,10 @@ GitHub uses a file from here for any repository in the organisation that does no
 | [`profile/README.md`](profile/README.md) | The organisation's public landing page |
 | [`.github/workflows/release.yml`](.github/workflows/release.yml) | Reusable release workflow, described [below](#reusable-release-workflow) |
 | [`cliff.toml`](cliff.toml) | Shared git-cliff config: release notes and the next version, read by the release workflow |
-| [`vale/khinse-labs/`](vale/khinse-labs/) | Shared Vale package: the prose rules and their base config, described [below](#shared-vale-config) |
-| [`.github/workflows/vale-package.yml`](.github/workflows/vale-package.yml) | Tests the Vale rules, builds `khinse-labs.zip` from `vale/khinse-labs/` and attaches it to a release |
+| [`lefthook/conventions.yml`](lefthook/conventions.yml) | Shared Git hooks, described [below](#git-hooks) |
+| [`cchk.toml`](cchk.toml) | Shared commit-check rules, read by the Git hooks and the Commit Check GitHub App |
+| [`vale/khinse-labs/`](vale/khinse-labs/) | Shared Vale package: the Vale config of every repository, described [below](#shared-vale-config) |
+| [`.github/workflows/vale-package.yml`](.github/workflows/vale-package.yml) | Checks the Vale package, builds `khinse-labs.zip` from `vale/khinse-labs/` and attaches it to a release |
 
 ## Notes for maintainers
 
@@ -33,6 +35,20 @@ GitHub uses a file from here for any repository in the organisation that does no
 - This repository must be public for the defaults to apply.
 
 See GitHub's guide to [default community health files](https://docs.github.com/en/communities/setting-up-your-project-for-healthy-contributions/creating-a-default-community-health-file).
+
+## Git hooks
+
+[`lefthook/conventions.yml`](lefthook/conventions.yml) holds the Git hooks of every repository. They run commit-check with the repository's `.lefthook/cchk.toml`, and Vale on the commit message. Install uv and lefthook as [`CONTRIBUTING.md`](CONTRIBUTING.md) describes. Then add the hooks to the repository's `lefthook.yml`:
+
+```yaml
+remotes:
+  - git_url: https://github.com/khinse-labs/.github
+    ref: v0.1.0
+    configs:
+      - lefthook/conventions.yml
+```
+
+The repository's `.lefthook/cchk.toml` starts with `inherit_from = "github:khinse-labs/.github@v0.1.0:cchk.toml"`. Run `lefthook install` in each clone.
 
 ## Reusable release workflow
 
