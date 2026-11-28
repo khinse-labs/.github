@@ -38,7 +38,7 @@ See GitHub's guide to [default community health files](https://docs.github.com/e
 
 ## Git hooks
 
-[`lefthook/conventions.yml`](lefthook/conventions.yml) holds the Git hooks of every repository. They run commit-check with the repository's `.lefthook/cchk.toml`, and Vale on the commit message. Install uv and lefthook as [`CONTRIBUTING.md`](CONTRIBUTING.md) describes. Then add the hooks to the repository's `lefthook.yml`:
+[`lefthook/conventions.yml`](lefthook/conventions.yml) holds the Git hooks of every repository. They run commit-check with the repository's `.lefthook/cchk.toml`, and Vale on the commit message. Install uv, lefthook and mise as [`CONTRIBUTING.md`](CONTRIBUTING.md) describes. Then add the hooks to the repository's `lefthook.yml`:
 
 ```yaml
 remotes:
@@ -49,6 +49,8 @@ remotes:
 ```
 
 The repository's `.lefthook/cchk.toml` starts with `inherit_from = "github:khinse-labs/.github@v0.1.0:cchk.toml"`. Run `lefthook install` in each clone.
+
+The `comment-ratio` job of the pre-commit hook counts the lines of each staged file with [cloc](https://github.com/AlDanial/cloc), which mise fetches on first use. A file with 5 or more lines of code fails when its comment lines are more than half its code lines. Move the long explanation to the docs, and keep the comments that the code cannot show.
 
 ## Reusable release workflow
 
@@ -230,7 +232,7 @@ git log -1 --format=%B | vale --path=COMMIT_EDITMSG
 
 Every alert on a message is an error and stops the commit. The prose rules are the rules of `[*]`, with these changes for messages:
 
-- 17 ai-tells rules are off. On past commit messages, all or nearly all their alerts were false. `ai-tells.ColonUsage` would stop every commit with a `Co-Authored-By:` trailer, and `ai-tells.ConsequenceClause` flags ", so", which a body needs to give a reason. The comment in the package `.vale.ini` lists the rest.
+- 17 ai-tells rules are off. On past commit messages, all or nearly all their alerts were false. `ai-tells.ColonUsage` would stop every commit with a `Co-Authored-By:` trailer, and `ai-tells.ConsequenceClause` flags ", so", which a body needs to give a reason. The `[COMMIT_EDITMSG]` section of the package `.vale.ini` lists the rest.
 - `Vale.Spelling` and the vocabulary case check are off, because a message names identifiers, tools and package names.
 - All write-good rules are on, also the ones that `[*]` turns off.
 

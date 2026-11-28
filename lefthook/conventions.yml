@@ -22,6 +22,14 @@ pre-commit:
   jobs:
     - name: commit-check
       run: uvx --quiet commit-check@2.18.3 --no-banner --config .lefthook/cchk.toml --branch --author-name --author-email
+    # In an .ini file, cloc takes ";" as the one comment mark. The job reads .ini files as TOML,
+    # where "#" starts a comment.
+    - name: comment-ratio
+      run: |
+        mise x cloc@2.12 -- cloc --quiet --by-file --csv --hide-rate --force-lang=TOML,ini {staged_files} |
+          awk -F, 'NR > 1 && $1 != "SUM" && $5 >= 5 && $4 * 2 > $5 {
+            printf "%s: %d comment lines for %d code lines, more than half\n", $2, $4, $5; bad = 1
+          } END { exit bad }'
 
 pre-push:
   jobs:

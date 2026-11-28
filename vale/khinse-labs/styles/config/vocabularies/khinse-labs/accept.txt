@@ -33,3 +33,4 @@ Quarkus
 (?i)lefthook
 (?i)fixup
 [A-Za-z0-9]+_[A-Za-z0-9_]+
+cloc
