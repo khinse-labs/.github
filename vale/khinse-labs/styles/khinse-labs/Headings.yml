@@ -1,6 +1,6 @@
 extends: capitalization
 message: "'%s' should use sentence case"
-level: warning
+level: error
 scope: heading
 match: $sentence
 exceptions:

@@ -2,7 +2,7 @@
 # as "close proximity" and "each and every", so they are not here.
 extends: existence
 message: "'%s' says one thing twice. Use the shorter form."
-level: warning
+level: error
 ignorecase: true
 tokens:
   - ask the question directly

@@ -3,7 +3,7 @@
 # Modelese.Importance finds "it is important to".
 extends: existence
 message: "Remove the filler '%s'."
-level: warning
+level: error
 ignorecase: true
 tokens:
   - please note

@@ -114,16 +114,16 @@ jobs:
 | Package | What it adds |
 | --- | --- |
 | `write-good` | Passive voice, wordy phrases, weasel words, adverbs, sentences that start with "there is" and repeated words |
-| `Readability` | The Flesch-Kincaid grade of each paragraph of 25 words or more, as a warning above 12 |
+| `Readability` | The Flesch-Kincaid grade of each paragraph of 25 words or more, as an error above 12 |
 | `Prompts` | Checks for `AGENTS.md`, `CLAUDE.md` and `SKILL.md` files |
 | `Modelese` | Phrases that language models overuse |
-| `ai-tells` | More patterns of generated prose, as warnings. A semicolon is an error. |
+| `ai-tells` | More patterns of generated prose |
 | `alex` | Words that are not inclusive |
 | `Commits` | Checks for commit messages, described [below](#commit-messages) |
 
-The `.vale.ini` turns the styles and Vale's own style on for every file. `Prompts` is on for `AGENTS.md`, `CLAUDE.md` and `SKILL.md` files and off for all others. `Commits` is on for commit messages and off for all other files. The `.vale.ini` also sets the rule levels, and it turns off the `ai-tells` rules that repeat a rule of another style. It pins each package to a release and to the SHA-256 of its archive. [`vale-package.yml`](.github/workflows/vale-package.yml) runs the tests of the rules, then packs the folder as `khinse-labs.zip` and attaches it to each release of this repository.
+The `.vale.ini` turns the styles and Vale's own style on for every file. `Prompts` is on for `AGENTS.md`, `CLAUDE.md` and `SKILL.md` files and off for all others. `Commits` is on for commit messages and off for all other files. Every rule that is on gives an error, and the `ai-tells` rules that repeat another style are off. It pins each package to a release and to the SHA-256 of its archive. [`vale-package.yml`](.github/workflows/vale-package.yml) runs the tests of the rules, then packs the folder as `khinse-labs.zip` and attaches it to each release of this repository.
 
-`Vale.Spelling` checks the spelling, and a misspelling gives a warning. The terms that it accepts in every repository are in the vocabulary [`accept.txt`](vale/khinse-labs/styles/config/vocabularies/khinse-labs/accept.txt). It also accepts a word with an underscore inside it, such as `git_url`, because such a word is an identifier.
+`Vale.Spelling` checks the spelling, and a misspelling is an error. The terms that it accepts in every repository are in the vocabulary [`accept.txt`](vale/khinse-labs/styles/config/vocabularies/khinse-labs/accept.txt). It also accepts a word with an underscore inside it, such as `git_url`, because such a word is an identifier.
 
 Vale lints the prose of more than Markdown:
 
@@ -213,7 +213,6 @@ Every alert on a message is an error and stops the commit. The prose rules are t
 - `Vale.Spelling` is off, because a body names identifiers and tools.
 - `alex.ProfanityUnlikely` is off. It reports "failed" and "failure".
 - All write-good rules are on, also the ones that `[*]` turns off.
-- Every rule gives an error for messages, also the rules that give warnings in other files.
 
 The section of the package sets its own rule levels, so a level in the `[*]` section of a repository does not reach commit messages. To change a level for messages, set it in a `[COMMIT_EDITMSG]` section of the repository's `.vale.ini`.
 

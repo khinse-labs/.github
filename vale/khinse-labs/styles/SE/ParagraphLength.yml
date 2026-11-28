@@ -1,7 +1,7 @@
 # Simplified English: Limits a paragraph to 6 sentences.
 extends: metric
 message: "Paragraph has %s sentences (max 6)."
-level: warning
+level: error
 scope: paragraph
 formula: round(sentences)
 condition: "> 6.0"

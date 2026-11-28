@@ -2,7 +2,7 @@
 # write-good.Weasel find the others, such as "just" and "very", so they are not here.
 extends: existence
 message: "Remove the filler '%s'."
-level: warning
+level: error
 ignorecase: true
 tokens:
   - actually
